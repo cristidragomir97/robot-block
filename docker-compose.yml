@@ -1,0 +1,15 @@
+version: '2.1'
+
+services:
+  platform:
+    build: ./platform
+    restart: always
+    network_mode: host
+    environment: 
+        - ROS_IP=192.168.100.90
+        - ROS_HOSTNAME=192.168.100.90
+        - ROS_MASTER_URI=http://192.168.100.90:11311
+        - UDEV=1
+    privileged: true
+    devices:
+      - "/dev:/dev"

@@ -1,0 +1,10 @@
+{
+    "categ": "sensors",
+    "type": "IMU",
+    "name": "LSM9DS1",
+    "callback": "read",
+    "ros_message": "sensor_msgs.msg.Imu",
+    "default_topic": "/imu/raw",
+    "bus": "I2C",
+    "address": ["0x1e", "0x6b"]
+}

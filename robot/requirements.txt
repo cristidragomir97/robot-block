@@ -1,0 +1,8 @@
+sparkfun-qwiic-scmd==0.9.1
+Jetson.GPIO==2.0.17
+RPi.GPIO==0.7.0
+vl53l1x==0.0.5
+smbus2==0.4.1
+psutil==5.8.0
+colorama==0.4.4
+

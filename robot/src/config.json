@@ -1,0 +1,93 @@
+[{
+    "name": "balenaBot", 
+    "desc": "default implementation of the balenaBot",
+    
+    "driver":{
+        "use_pid": "true",
+        "radius": 0.0325, 
+        "type": "sparkfun",
+        "address": "0x5d", 
+        "flip": "true"
+    },
+
+    "actuators": [
+        {
+            "topic": "/camera_servo",
+            "type": "GPIOServo",
+            "pin": 33
+        }
+    ],
+
+    "sensors": {
+
+        "camera":[{
+                "type": "realsense",
+                "model": "D415",
+
+                "depth":{
+                    "enable": "true",
+                    "resolution": [424, 240],
+                    "rate": 15
+                },
+
+                "color":{
+                    "enable": "true",
+                    "resolution": [320, 240],
+                    "rate": 15
+                }
+        }],
+
+        "LIDAR":{
+            "type": "RPLidar",
+            "model": "A1",
+            "rate": 24
+        },
+    
+        "ranging":[
+            {
+                "type": "VL53L1",
+                "topic": "/range/center", 
+                "address": "0x29",
+                "angle": 0, 
+                "fov": "wide",
+                "range": 3,
+                "rate": 24
+            }, 
+            {
+                "type": "VL53L1",
+                "topic": "/range/left",
+                "address": "0x31",
+                "angle": -30, 
+                "fov": "wide",
+                "range": 3,
+                "rate": 24
+            }, 
+            {
+                "type": "VL53L1",
+                "topic": "/range/right", 
+                "address": "0x32",
+                "angle": 30, 
+                "fov": "wide",
+                "range": 3,
+                "rate": 24
+            }
+
+        ],
+
+        "IMU":[{
+            "topic": "/imu/raw",
+            "type":"LSM9DS1",
+            "address": ["0x1e", "0x6b"],
+            "publish_tf": true,
+            "filter":{
+                "type": "madgwick"
+            }
+        }],
+
+        "power":[{
+            "type":"INA219",
+            "topic": "/power/motors",
+            "address": "0x40"
+        }]
+    }
+}]
