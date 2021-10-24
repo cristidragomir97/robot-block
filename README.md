@@ -92,7 +92,7 @@ Basic idea is to be able to abstract away the hardware completely for higher lev
             "angle": -30, 
             "flip": "false",
             "fov": "wide",
-            "range": 3§
+            "range": 3
         }, 
         {
             "type": "VL53L1",
