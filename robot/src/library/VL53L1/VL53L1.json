@@ -1,1 +1,9 @@
-{}
+{
+    "categ": "sensors",
+    "type": "ranging",
+    "name": "VL53L1",
+    "callback": "read",
+    "ros_message": "sensor_msgs.msg.Range",
+    "bus": "I2C",
+    "address": "0x29"
+}

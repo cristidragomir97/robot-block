@@ -1,93 +1,136 @@
 [{
-    "name": "balenaBot", 
-    "desc": "default implementation of the balenaBot",
-    
-    "driver":{
-        "use_pid": "true",
-        "radius": 0.0325, 
-        "type": "sparkfun",
-        "address": "0x5d", 
-        "flip": "true"
-    },
+    "name": "balenabot_mini", 
+    "desc": "Low-cost robot based around Sparkfun Auto pHAT",
+    "components":{
 
-    "actuators": [
-        {
-            "topic": "/camera_servo",
-            "type": "GPIOServo",
-            "pin": 33
-        }
-    ],
-
-    "sensors": {
-
-        "camera":[{
-                "type": "realsense",
-                "model": "D415",
-
-                "depth":{
-                    "enable": "true",
-                    "resolution": [424, 240],
-                    "rate": 15
-                },
-
-                "color":{
-                    "enable": "true",
-                    "resolution": [320, 240],
-                    "rate": 15
-                }
-        }],
-
-        "LIDAR":{
-            "type": "RPLidar",
-            "model": "A1",
-            "rate": 24
-        },
-    
-        "ranging":[
+        "interface": [
+            {   
+                "library":"PCA9685",
+                "signal":"PWM",
+                "address": "0x7f",
+                "channels": [0, 1, 2, 3]
+            },
             {
-                "type": "VL53L1",
-                "topic": "/range/center", 
-                "address": "0x29",
-                "angle": 0, 
-                "fov": "wide",
-                "range": 3,
-                "rate": 24
-            }, 
-            {
-                "type": "VL53L1",
-                "topic": "/range/left",
-                "address": "0x31",
-                "angle": -30, 
-                "fov": "wide",
-                "range": 3,
-                "rate": 24
-            }, 
-            {
-                "type": "VL53L1",
-                "topic": "/range/right", 
-                "address": "0x32",
-                "angle": 30, 
-                "fov": "wide",
-                "range": 3,
-                "rate": 24
+                "library":"ADS1115",
+                "signal":"ADC",
+                "address": "0x7f",
+                "channels": [0, 1, 2, 3]
             }
-
         ],
 
-        "IMU":[{
-            "topic": "/imu/raw",
-            "type":"LSM9DS1",
-            "address": ["0x1e", "0x6b"],
-            "publish_tf": true,
-            "filter":{
-                "type": "madgwick"
+        "actuators": [
+            {   "type": "servo",
+                "role": "service",
+                "topic": "/camera_servo",
+                "library": "I2CPWM",
+                "address": "PCA/0",
+                "args":{}
+            }, 
+            {
+                "type": "driver",
+                "role": "subscriber",
+                "topic": "/cmd/vel",
+                "library": "SCMD",
+                "address": "0x5d", 
+                "args":{
+                    "flip": "true",
+                    "radius": 0.0325 
+                }
             }
-        }],
+        ],
 
-        "power":[{
-            "type":"INA219",
-            "topic": "/power/motors",
-            "address": "0x40"
-        }]
+        "sensors": [
+            {
+                "type": "ranging",
+                "library": "VL53L1",
+                "role": "publisher",
+                "topic": "/range/center", 
+                "address": "0x29",
+                "args":{}
+            }, 
+            {
+                "type": "ranging",
+                "library": "VL53L1",
+                "role": "publisher",
+                "topic": "/range/left",
+                "address": "0x31",
+                "args":{}
+                
+            }, 
+            {
+                "type": "ranging",
+                "library": "VL53L1",
+                "role": "publisher",
+                "topic": "/range/right", 
+                "address": "0x32",
+                "args":{}
+            },
+            {
+                "type": "motion",
+                "topic": "/imu/raw",
+                "role": "publisher",
+                "library":"LSM9DS1",
+                "address": ["0x1e", "0x6b"],
+                "args":{
+                    "publish_tf": true
+                }
+                
+            },
+            {
+                "type": "power",
+                "library":"INA219",
+                "role": "publisher",
+                "topic": "/power/motors",
+                "address": "0x40",
+                "args":{}
+            }
+        ],
+
+        "external":[
+            {
+                "name": "camera",
+                "role": "external",
+                "source": "~/catkin_ws/realsense-ros",
+                "build": "false",
+                "command": "roslaunch",
+                "package": "realsense2_camera",
+                "file": "rs_camera.launch",
+                "args": {
+                    "color_width": "640",
+                    "color_height": "480",
+                    "color_fps": "15",
+                    "depth_width": "640",
+                    "depth_height": "480",
+                    "depth_fps": "15"
+                }
+            },
+            {
+                "name": "rplidar",
+                "role": "external",
+                "source": "~/catkin_ws/rpilidar_ros",
+                "build": "false",
+                "command": "roslaunch",
+                "package": "rplidar_ros",
+                "file": "rpildar.launch",
+                "args": {}
+            },
+            {
+                "name":"imu_filter",
+                "role": "external",
+                "build": "false",
+                "source": "",
+                "command": "rosrun",
+                "package": "imu_complementary_filter",
+                "file": "complementary_filter_node",
+                "args": {
+                    "fixed_frame": "camera_link",
+                    "use_mag": "false",
+                    "do_bias_estimation": "true", 
+                    "do_adaptive_gain": "false", 
+                    "publish_tf": "true"
+                }
+            }
+        ]
+
     }
 }]

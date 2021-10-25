@@ -1,1 +1,9 @@
-{}
+{
+    "categ": "sensors",
+    "type": "ranging",
+    "name": "SRF05",
+    "callback": "read",
+    "ros_message": "sensor_msgs.msg.Range",
+    "bus": "GPIO",
+    "address": ""
+}

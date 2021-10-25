@@ -1,34 +1,77 @@
-from library import Device, Library
-from config import ConfigParser
+import json, importlib, importlib.machinery
+
+from library import LibraryItem, Library
+from config import Config, Interface, Device, External
 from subscriber import Subscriber
 from publisher import Publisher
 
-def import_device(device):
-    loader = importlib.machinery.SourceFileLoader(device.name, device.python)
-    return loader.load_module()
+class Factory():
+
+    def __init__(self):
+        self.threads = {}
+
+        self.lib = Library()
+        self.conf = Config('../config.json')
+
+        self.lib.pretty_print()
+        self.conf.pretty_print()
+
+        for device in self.conf.devices():
+            if device.role == "publisher":
+                thread = self.make_publisher(device)
+                self.threads[device.topic] = thread
+                
+            elif device.role == "subscriber":
+                thread = self.make_subscriber(device)
+                self.threads[device.topic] = thread
+
+            elif device.role == "service":
+                thread = self.make_service(device)
+                self.threads[device.topic] = thread
+
+            elif device.role == "external":
+                thread = self.make_external(device)
+                self.threads[device.topic] = thread
+
+    def make_publisher(self, dev):
+        try:
+            lib = self.lib.get_device(dev.library)
+            print(lib.python, lib.name, lib.callback, lib.ros_message)
+
+        except AttributeError as e:
+            print(dev.library, " has not been found  Error: ", e)
 
 
-def init_device(module, device, args=None):
-    return getattr(module, device.name)(args)
+    def make_subscriber(self, dev):
+        try:
+            lib = self.lib.get_device(dev.library)
+            loader = importlib.machinery.SourceFileLoader(lib.name, lib.python)
+            module = loader.load_module()
+            
+            instance = getattr(module, lib.name)
+            instance(dev.args)
+
+            callback = getattr(instance, lib.callback)
+
+            return Subscriber(dev.topic, lib.ros_message, callback)
+
+        except AttributeError as e:
+            print(dev.library, " has not been found library. Error: ", e)
+
+    def make_service(self, device):
+        pass
+
+    def make_external(self, device):
+        pass
+
+if __name__ == "__main__":
+    factory = Factory()
 
 
 
-def execute(command):
-    process = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
-    output = ''
 
-    # Poll process for new output until finished
-    for line in iter(process.stdout.readline, ""):
-        print(line)
-        output += str(line)
 
-    process.wait()
-    exitCode = process.returncode
-
-    if (exitCode == 0):
-        return output
-    else:
-        raise Exception(command, exitCode, output)
+'''
 
 def handle_imus():
        for imu in range(0,parser.imus()):
@@ -127,20 +170,8 @@ def handle_driver():
 def handle_filter():
     execute("rosrun imu_complementary_filter complementary_filter_node _fixed_frame:=camera_link, _use_mag:=false _do_bias_estimation:=true _do_adaptive_gain:=false _publish_tf:=true")
 
+'''
 
 
-
-class Factory():
-    def __init__(self):
-        self.lib = Library()
-        self.parser = ConfigParser()
-
-        self.handle_driver()
-
-        self.handle_imus()
-       
-
-    
-    
 
 

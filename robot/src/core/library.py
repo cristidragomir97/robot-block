@@ -1,7 +1,7 @@
 import os, json, importlib
-from colorama import Fore, Back, Style
+from colorama import Fore
 
-class Device():
+class LibraryItem():
         def __init__(self, name, file):
             with open(file, 'r') as f:
                 try:
@@ -12,15 +12,22 @@ class Device():
                     self.type = contents["type"]
                     self.callback = contents["callback"]
                     self.ros_message = contents["ros_message"]
-                    self.default_topic = contents["default_topic"]
+                    self.valid = True
+                    
                 except KeyError as k:
                     print(Fore.YELLOW + "[warning] Can't load {} - field {} is missing ".format(name, k) + Fore.RESET)
+                    self.valid = False
 
+        def is_valid(self):
+            return self.valid
+
+                
 
 class Library():
 
     def __init__(self):
         self.devices = dict()
+        
 
         library_dir = os.path.realpath('../library')
         library_folders = [f.path  for f in os.scandir(library_dir) if f.is_dir()]
@@ -32,11 +39,26 @@ class Library():
 
             if os.path.exists(python_filename):
                 if os.path.exists(json_filename):
-                    self.devices[name] = Device(name, json_filename,)
+                    dev = LibraryItem(name, json_filename,)
+                    if dev.is_valid():
+                        self.devices[name] = dev
+                    else:
+                        print("INVALID FMM")
                 else:
                     print(Fore.YELLOW + "[warning] config file for {} missing, skipping device !".format(name) + Fore.RESET)
             else:
                 print(Fore.YELLOW + "[warning] python file for {} missing, skipping device !".format(name) + Fore.RESET)
+
+
+    def pretty_print(self):
+        
+        print(Fore.YELLOW, "LIBRARY: ")
+        for dev in self.devices: 
+            d = self.devices[dev]
+            print("\t * ", d.name, d.categ, d.type, d.callback, d.ros_message, d.python)
+        
+        print(Fore.RESET)
+
 
     def has_device(self, device):
         return device in self.devices

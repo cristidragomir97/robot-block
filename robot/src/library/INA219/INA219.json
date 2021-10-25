@@ -1,1 +1,9 @@
-{}
+{
+    "categ": "sensors",
+    "type": "power",
+    "name": "INA219",
+    "callback": "read",
+    "ros_message": "sensor_msgs.msg.BatteryState",
+    "bus": "I2C",
+    "address": "0x40"
+}

@@ -1,157 +1,124 @@
+import json 
+from colorama import Fore
+from utils import execute
 
-import json
-from colorama import Fore, Back
+class Interface():
+    def __init__(self, obj):
+        try:
+            self.library = obj["library"]  
+            self.signal = obj["signal"]
+            self.address = obj["address"]  
+            self.channels = obj["channels"]
+        except KeyError as k:
+            formatted = json.dumps(obj, indent=4)                                
+            print("{}[error] Can't load interface. Field {} is missing.\n{}{}\n  ".format(Fore.RED, k, Fore.RESET, formatted))
 
-class Sensors:
-    def __init__(self):
-        self.cameras = []
-        self.lidar = {}
-        self.ranging = []
-        self.imu = []
-        self.power = []
+class Device():
+    def __init__(self, obj):
+        try:
+            self.type = obj["type"]
+            self.topic = obj["topic"]  
+            self.role = obj["role"]
+            self.library = obj["library"]  
+            self.address = obj["address"]  
+            self.args = obj["args"] 
+        except KeyError as k:
+            formatted = json.dumps(obj, indent=4)                                
+            print("{}[error] Can't load device. Field {} is missing.\n{}{}\n  ".format(Fore.RED, k, Fore.RESET, formatted))
 
-        # camera
-        if has_key(sensors, "camera"):
-           
-            cameras = sensors["camera"]  
-            print("\n[config] {} camera(s):".format(len(cameras))) 
+class External():
+    def __init__(self, obj):
+        try:
+            self.name = obj["name"]
+            self.role = obj["role"]
+            self.source = obj["source"]
+            self.build = obj["build"]
+            self.command = obj["command"]
+            self.package = obj["package"]
+            self.file = obj["file"]
+            self.args = obj["args"] 
 
-            for camera in cameras: 
-                print("[config]\t ---> type: {}, model: {}".format(camera["type"], camera["model"]))
-                self.sensors.cameras.append(camera)
-                
+            self.shell = ". ~/catkin_ws/devel/setup.sh &&"
 
-        # LIDAR
-        if has_key(sensors, "LIDAR"):
-            lidar = sensors["LIDAR"]
-            print("\n* LIDAR: ")  
-            print("[config]\t ---> type: {}, model: {}".format(lidar["type"], lidar["model"]))
-            self.sensors.lidar = lidar
+        except KeyError as k:
+            formatted = json.dumps(obj, indent=4)                                
+            print("{}[error] Can't load external. Field {} is missing.\n{}{}\n  ".format(Fore.RED, k, Fore.RESET, formatted))
 
-         # range sensors
-        if has_key(sensors, "ranging"):
-            print("\n[config] {} ranging sensor(s) :".format(len(sensors["ranging"])))
 
-            ranging = sensors["ranging"]
-            for sensor in ranging:
-                print("[config] \t ---> type: {}, topic: {}".format(sensor["type"], sensor["topic"]))
-                self.sensors.ranging.append(sensor)
+    def cli(self):
+        shell = ". ~/catkin_ws/devel/setup.sh &&"
+        shell += " " + self.command
+        shell += " " + self.package
+        shell += " " + self.file
+        shell += " "
+
+        for argument in self.args:
+            shell += argument + ":=" + self.args[argument] + " "
         
-        if has_key(sensors, "IMU"):
-            print("\n[config]  IMU available")
-            imus = sensors["IMU"]
-
-            for sensor in imus:
-                topic = sensor["topic"]
-                kind = sensor["type"]
-                print("[config] \t ---> type:{}, topic: {}".format(kind, topic))
-
-                self.sensors.imu.append(sensor)
+        return shell
+        #execute(shell)
 
 
-        if has_key(sensors, "power"):
-            print("\n[config]  power available")
-            power = sensors["power"]
+class Config():
+    def __init__(self, _file):
+        self.dev = []
+        self.ext = []
+        self.interface = []
 
-            for sensor in power:
-                kind = sensor["type"]
-                topic = sensor["topic"]
-                print("[config] \t ---> type:{}, topic: {}".format(kind, topic))
+        with open(_file) as f:
 
-                self.sensors.power.append(sensor)
+            try:
+                contents = json.load(f)[0]
+                self.name = contents["name"]
+                self.desc = contents["desc"]
+
+                components = contents["components"]
+                
+                if "interface" in components:
+                    for element in components["interface"]:
+                        self.interface.append(Interface(element))
+
+                if "sensors" in components:
+                    for element in components["sensors"]:
+                        self.dev.append(Device(element))
+
+                if "actuators" in components:
+                    for element in components["actuators"]:
+                        self.dev.append(Device(element))
+
+                if "external" in components:
+                    for element in components["external"]:
+                        self.ext.append(External(element))
+
+            except KeyError as k:
+                    print(Fore.YELLOW + "[warning] Can't load {} - field {} is missing ".format(self.name, k) + Fore.RESET)
+            except json.decoder.JSONDecodeError as j:
+                print(Fore.YELLOW + "[warning] JSON malformed: {}".format(j) + Fore.RESET)
+
+    def pretty_print(self):
+        print(Fore.GREEN, "DEVICES: ")
+        for dev in self.dev:
+            print("\t * ",dev.type, dev.library, dev.role, dev.topic, dev.address, dev.args)
+
+        print(Fore.CYAN, "EXTERNAL: ")
+        for ext in self.ext:
+            print("\t * ", ext.cli())
+        
+        print(Fore.MAGENTA, "INTERFACES: ")
+        for io in self.interface:
+            print("\t * ", io.library, io.signal, io.address, io.channels)
+
+        print(Fore.RESET)
 
 
+    def interfaces(self):
+        return self.interface
 
-class Sensor:
-     def __init__(self):
-        pass
+    def devices(self):
+        return self.dev
 
+    def external(self):
+        return self.ext
 
-class Actuators:
-    def __init__(self):
-        pass
-
-def has_key(object, key):
-    try: 
-        object["{}".format(key)]
-        return True
-    except ValueError:
-        return False
-
-# helper classes that allow us to do deep chaining 
-
-
-class ConfigParser:
-
-    def __init__(self, file="config.json"):
-        print("Configuration loaded: \n")
-        with open(file) as f:
-
-            self.sensors = Sensors()
-
-            config = json.load(f)
-            config = config[0]
-
-            # general stuff
-            self.name = config["name"]
-            self.desc = config["desc"]
     
-            # driver
-            self.driver = config["driver"]
-
-            # actuators
-            if has_key(config, "actuators"):
-                actuators = config["actuators"]
-                self.parse_actuators(actuators)
-
-            # sensors
-            if has_key(config, "sensors"):
-                sensors = config["sensors"]
-                self.parse_sensors(sensors)
-
-
-    def parse_sensors(self, sensors):
-     
-
-    def parse_actuators(self, actuators):
-        print("[config] {} ranging sensor(s) :".format(len(actuators)))
-        for actuator in actuators:
-            print("[config]\t * type: {}, topic: {}".format(actuator["type"], actuator["topic"]))
-
-    def get_driver(self):
-        pid, radius, kind, address, flip = list(self.driver.values())
-        return pid, radius, kind, address, flip
-
-    def imus(self):
-        return len(self.sensors.imu)
-
-    def get_imu(self, i):
-        return self.sensors.imu[i].values()
-
-    def ranging(self):
-        return len(self.sensors.ranging)
-
-    def get_ranging(self, i):
-        return self.sensors.ranging[i].values()
-    
-    def power(self):
-        return len(self.sensors.power)
-
-    def get_power(self, i):
-        return self.sensors.power[i].values()
-
-    def cameras(self):
-        return len(self.sensors.cameras)
-
-    def get_camera(self, i):
-        return self.sensors.cameras[i].values()
-
-    def get_lidar(self):
-        return self.sensors.lidar.values()
-
-
-
-
-
-
-
+   

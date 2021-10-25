@@ -1,1 +1,9 @@
-{}
+{
+    "categ": "actuator",
+    "type": "driver",
+    "name": "SCMD",
+    "callback": "update",
+    "ros_message": "sensor_msgs.msg.Twist",
+    "bus": "I2C",
+    "address": "0x5d"
+}
