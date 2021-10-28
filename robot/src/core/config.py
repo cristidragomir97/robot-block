@@ -19,8 +19,7 @@ class Device():
             self.type = obj["type"]
             self.topic = obj["topic"]  
             self.role = obj["role"]
-            self.library = obj["library"]  
-            self.address = obj["address"]  
+            self.library = obj["library"]
             self.args = obj["args"] 
         except KeyError as k:
             formatted = json.dumps(obj, indent=4)                                
@@ -44,7 +43,6 @@ class External():
             formatted = json.dumps(obj, indent=4)                                
             print("{}[error] Can't load external. Field {} is missing.\n{}{}\n  ".format(Fore.RED, k, Fore.RESET, formatted))
 
-
     def cli(self):
         shell = ". ~/catkin_ws/devel/setup.sh &&"
         shell += " " + self.command
@@ -60,6 +58,7 @@ class External():
 
 
 class Config():
+
     def __init__(self, _file):
         self.dev = []
         self.ext = []
@@ -98,7 +97,7 @@ class Config():
     def pretty_print(self):
         print(Fore.GREEN, "DEVICES: ")
         for dev in self.dev:
-            print("\t * ",dev.type, dev.library, dev.role, dev.topic, dev.address, dev.args)
+            print("\t * ",dev.type, dev.library, dev.role, dev.topic, dev.args)
 
         print(Fore.CYAN, "EXTERNAL: ")
         for ext in self.ext:
@@ -110,7 +109,6 @@ class Config():
 
         print(Fore.RESET)
 
-
     def interfaces(self):
         return self.interface
 
@@ -119,6 +117,3 @@ class Config():
 
     def external(self):
         return self.ext
-
-    
-   

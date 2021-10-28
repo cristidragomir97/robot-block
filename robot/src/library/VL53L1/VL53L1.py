@@ -2,7 +2,7 @@ import VL53L1X
 
 from sensor_msgs.msg import Range
 
-class _VL53L1():
+class VL53L1():
 
     def __init__(self, address=0x29):
         address = int(address, 16)

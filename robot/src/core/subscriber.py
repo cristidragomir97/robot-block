@@ -1,17 +1,13 @@
-#import rospy
-import threading
+#import rospy, rospy
+import threading, rospy
 
 class Subscriber(threading.Thread):
     def __init__(self,  topic, message, callback):
-        pass
-
-        """
+  
         threading.Thread.__init__(self)
         rospy.Subscriber(topic, message, callback)
-        """
 
     def run(self):
-        """
         rospy.spin()
-        """
+  
         

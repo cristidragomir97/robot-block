@@ -29,12 +29,12 @@
             {
                 "type": "driver",
                 "role": "subscriber",
-                "topic": "/cmd/vel",
+                "topic": "/cmd_vel",
                 "library": "SCMD",
                 "address": "0x5d", 
                 "args":{
-                    "flip": "true",
-                    "radius": 0.0325 
+                    "radius": 0.0325,
+                    "flip": "true"
                 }
             }
         ],
@@ -44,17 +44,20 @@
                 "type": "ranging",
                 "library": "VL53L1",
                 "role": "publisher",
-                "topic": "/range/center", 
-                "address": "0x29",
-                "args":{}
+                "topic": "/range/center",      
+                "args":{
+                    "address": "0x29"
+                }
             }, 
             {
                 "type": "ranging",
                 "library": "VL53L1",
                 "role": "publisher",
                 "topic": "/range/left",
-                "address": "0x31",
-                "args":{}
+                
+                "args":{
+                    "address": "0x31"
+                }
                 
             }, 
             {
@@ -62,8 +65,9 @@
                 "library": "VL53L1",
                 "role": "publisher",
                 "topic": "/range/right", 
-                "address": "0x32",
-                "args":{}
+                "args":{
+                    "address": "0x32"
+                }
             },
             {
                 "type": "motion",

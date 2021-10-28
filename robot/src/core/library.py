@@ -1,7 +1,7 @@
 import os, json, importlib
 from colorama import Fore
 
-class LibraryItem():
+class Package():
         def __init__(self, name, file):
             with open(file, 'r') as f:
                 try:
@@ -26,7 +26,7 @@ class LibraryItem():
 class Library():
 
     def __init__(self):
-        self.devices = dict()
+        self.packages = dict()
         
 
         library_dir = os.path.realpath('../library')
@@ -39,32 +39,31 @@ class Library():
 
             if os.path.exists(python_filename):
                 if os.path.exists(json_filename):
-                    dev = LibraryItem(name, json_filename,)
-                    if dev.is_valid():
-                        self.devices[name] = dev
+                    pack = Package(name, json_filename,)
+                    if pack.is_valid():
+                        self.packages[name] = pack
                     else:
                         print("INVALID FMM")
                 else:
-                    print(Fore.YELLOW + "[warning] config file for {} missing, skipping device !".format(name) + Fore.RESET)
+                    print(Fore.YELLOW + "[warning] config file for {} missing, skipping package !".format(name) + Fore.RESET)
             else:
-                print(Fore.YELLOW + "[warning] python file for {} missing, skipping device !".format(name) + Fore.RESET)
+                print(Fore.YELLOW + "[warning] python file for {} missing, skipping package !".format(name) + Fore.RESET)
 
 
     def pretty_print(self):
-        
-        print(Fore.YELLOW, "LIBRARY: ")
-        for dev in self.devices: 
-            d = self.devices[dev]
-            print("\t * ", d.name, d.categ, d.type, d.callback, d.ros_message, d.python)
+        print(Fore.YELLOW, "Packages: ")
+        for package in self.packages: 
+            p = self.packages[package]
+            print("\t * ", p.name, p.categ, p.type, p.callback, p.ros_message, p.python)
         
         print(Fore.RESET)
 
 
-    def has_device(self, device):
-        return device in self.devices
+    def has_package(self, package):
+        return package in self.packages
     
-    def get_device(self, device):
-        return self.devices[device]
+    def get_package(self, package):
+        return self.packages[package]
 
 
 

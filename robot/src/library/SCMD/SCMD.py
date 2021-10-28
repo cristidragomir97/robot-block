@@ -1,9 +1,11 @@
 import rospy, qwiic_scmd
 from utils import compute_pwm
 
-class SparkfunDriver():
+class SCMD():
      
     def __init__(self, radius, flip):
+    
+        print(radius, flip)
         self.radius = radius
         self.flip = flip
 
@@ -23,11 +25,10 @@ class SparkfunDriver():
             print("\033[91m* Exception initialisitng Sparkfun Driver", e )
 
     def update(self, msg):
-        angular = msg.angular.z
-        linear = msg.linear.x
+        angular = float(msg.angular.z)
+        linear = float(msg.linear.x)
 
-        
-        right_pwm, left_pwm = compute_pwm(angular, linear, self.radius)
+        right_pwm, left_pwm = compute_pwm(angular, linear, float(self.radius))
         print(right_pwm, left_pwm, angular, linear)
 
         self.sparkfun.set_drive(0, 0, right_pwm)

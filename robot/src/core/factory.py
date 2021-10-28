@@ -1,6 +1,6 @@
-import json, importlib, importlib.machinery
+import json, importlib, importlib.machinery, rospy
 
-from library import LibraryItem, Library
+from library import Library, Package
 from config import Config, Interface, Device, External
 from subscriber import Subscriber
 from publisher import Publisher
@@ -33,30 +33,44 @@ class Factory():
                 thread = self.make_external(device)
                 self.threads[device.topic] = thread
 
-    def make_publisher(self, dev):
+    
+    
+    def make_pubsub(self, dev):
         try:
-            lib = self.lib.get_device(dev.library)
-            print(lib.python, lib.name, lib.callback, lib.ros_message)
+            # looks into hashmap and retrieves object for that string 
+            package = self.lib.get_package(dev.library)
 
-        except AttributeError as e:
-            print(dev.library, " has not been found  Error: ", e)
-
-
-    def make_subscriber(self, dev):
-        try:
-            lib = self.lib.get_device(dev.library)
-            loader = importlib.machinery.SourceFileLoader(lib.name, lib.python)
+            # cretes source loader, lib.name is the class name, and lib.python is the path to the source file
+            loader = importlib.machinery.SourceFileLoader(package.name, package.python)
+            
+            # imports module in the current context
             module = loader.load_module()
             
-            instance = getattr(module, lib.name)
-            instance(dev.args)
+            # basically retrieves constructor
+            instance = getattr(module, package.name)
+            
+            # runs constructor, unpacks arguments, and initialises object
+            instance = instance(*list(dev.args.values()))
+            
+            # gets callback method 
+            callback = getattr(instance, package.callback)
+            
+            # imports the ROS messages 
+            message = importlib.import_module(package.ros_message[0])
+            message = getattr(message, package.ros_message[1])
 
-            callback = getattr(instance, lib.callback)
-
-            return Subscriber(dev.topic, lib.ros_message, callback)
+            return dev.topic, message, callback
 
         except AttributeError as e:
             print(dev.library, " has not been found library. Error: ", e)
+        
+        
+    def make_subscriber(self, dev):
+        return Subscriber(self.make_pubsub(dev)).run()
+            
+    def make_publisher(self, dev):
+        return Publisher(self.make_pubsub(dev)).run()
+        
 
     def make_service(self, device):
         pass
@@ -65,10 +79,8 @@ class Factory():
         pass
 
 if __name__ == "__main__":
+    rospy.init_node("bot", anonymous=False, disable_signals=True)
     factory = Factory()
-
-
-
 
 
 '''
