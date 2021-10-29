@@ -9,7 +9,6 @@ from sensor_msgs.msg import BatteryState
 
 # LIRARY
 from roscore import Roscore
-from constants import *
 from utils import scan_bus, detect_usb, tof_address_fix
 from config import ConfigParser
 from subscriber import Subscriber

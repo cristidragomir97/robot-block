@@ -37,6 +37,17 @@ class Library():
             json_filename = full_path + '/{}.json'.format(name)
             python_filename = full_path + '/{}.py'.format(name)
 
+            '''
+            if not cond1:
+                print pula1
+            elif not cond2:
+                print pula2
+            elif not cond3:
+                [rint pula3]
+            else:
+                stmt 
+            '''
+
             if os.path.exists(python_filename):
                 if os.path.exists(json_filename):
                     pack = Package(name, json_filename,)

@@ -1,5 +1,5 @@
 import time
-from constants import *
+
 
 ### CONVERSION UTILS 
 ###################
@@ -32,7 +32,10 @@ def detect_usb():
     print(devices)
 
 def tof_address_fix(pins = [17, 27, 22]):
-
+    TOF1 = '0x29'
+    TOF2 = '0x31'
+    TOF3 = '0x32'
+    
     import RPi.GPIO as GPIO
     import VL53L1X
     import time
