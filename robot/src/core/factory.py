@@ -1,5 +1,6 @@
 import json, importlib, importlib.machinery, rospy
 
+from colorama import Fore
 from library import Library, Package
 from config import Config, Interface, Device, External
 from subscriber import Subscriber
@@ -67,7 +68,7 @@ class Factory():
             print(dev.library, " has not been found library. Error: ", e)
             return None, None, None
         except KeyError as e:
-            print("error for {}: {}".format(dev.library, e))
+            print(Fore.RED + "[error] key {} is invalid".format(e) + Fore.RESET)
             return None, None, None
         
         
@@ -83,7 +84,6 @@ class Factory():
     def make_publisher(self, dev):
         pass
         #return Publisher(self.make_pubsub(dev)).run()
-        
 
     def make_service(self, device):
         pass
@@ -94,17 +94,28 @@ class Factory():
 
     def threads(self):
         return self.threads
+
+    def stop_thread(self, id):
+        print("stop thread: ",id)
+    
+    def start_thread(self, id):
+        print("start thread: ",id)
+
+    def info_thread(self, id):
+        print("info thread: ",id)
+
         
 
 if __name__ == "__main__":
     rospy.init_node("bot", anonymous=False, disable_signals=True)
     factory = Factory()
     api = API(factory)
+    api.start()
 
 
     for thread in factory.threads.values(): 
         if thread is not None:
-            print(thread)
+            thread.start()
 
 
 
