@@ -4,6 +4,7 @@ from library import Library, Package
 from config import Config, Interface, Device, External
 from subscriber import Subscriber
 from publisher import Publisher
+from api import API
 
 class Factory():
 
@@ -33,20 +34,21 @@ class Factory():
                 thread = self.make_external(device)
                 self.threads[device.topic] = thread
 
+
     
     
     def make_pubsub(self, dev):
         try:
-            # looks into hashmap and retrieves object for that string 
+            # looks into hashmap and retrieves the package object for the device name given in the config file
             package = self.lib.get_package(dev.library)
 
-            # cretes source loader, lib.name is the class name, and lib.python is the path to the source file
+            # cretes source loader, where package.name is the class name, and package.python is the path to the source file
             loader = importlib.machinery.SourceFileLoader(package.name, package.python)
             
-            # imports module in the current context
+            # imports the python source file in the current context 
             module = loader.load_module()
             
-            # basically retrieves constructor
+            # basically retrieves constructor for the device 
             instance = getattr(module, package.name)
             
             # runs constructor, unpacks arguments, and initialises object
@@ -58,132 +60,52 @@ class Factory():
             # imports the ROS messages 
             message = importlib.import_module(package.ros_message[0])
             message = getattr(message, package.ros_message[1])
-
+            
             return dev.topic, message, callback
 
         except AttributeError as e:
             print(dev.library, " has not been found library. Error: ", e)
+            return None, None, None
+        except KeyError as e:
+            print("error for {}: {}".format(dev.library, e))
+            return None, None, None
         
         
     def make_subscriber(self, dev):
-        return Subscriber(self.make_pubsub(dev)).run()
+        topic, msg, cb =  self.make_pubsub(dev)
+
+        if topic is not None:
+            return Subscriber(topic, msg, cb)
+        else:
+            print("skipping device")
+
             
     def make_publisher(self, dev):
-        return Publisher(self.make_pubsub(dev)).run()
+        pass
+        #return Publisher(self.make_pubsub(dev)).run()
         
 
     def make_service(self, device):
         pass
 
-    def make_external(self, device):
+    def make_external(self, device): 
+        print(device.cli())
         pass
+
+    def threads(self):
+        return self.threads
+        
 
 if __name__ == "__main__":
     rospy.init_node("bot", anonymous=False, disable_signals=True)
     factory = Factory()
+    api = API(factory)
 
 
-'''
-
-def handle_imus():
-       for imu in range(0,parser.imus()):
-            topic, kind, address, use_filter, filter_type = parser.get_imu(imu)
-            
-            if kind == "LSM9DS1":
-                from hardware.imu._LSM9DS1 import _LSM9DS1
-                imu = _LSM9DS1()
-
-            if kind == "BNOO55":
-                from hardware.imu_BNO055 import _BNO055
-                imu = _BNO055()
-
-            Publisher(topic, Imu, imu.read).start()
-
-def handle_ranging():
-         for index in range(0,parser.ranging()):
-            kind, topic, address, angle, fov, _range, rate,  = parser.get_ranging(index)
-             
-            if kind == "VL53L1":
-                 from hardware.sensors.VL53L1 import _VL53L1
-                 sensor = _VL53L1(address=address)
-
-            Publisher(topic, Range, sensor.read).start()
-
-def handle_power():
-    for index in range(0, parser.power()):
-        kind, topic, address = parser.get_power(index)
-            
-        if kind == "INA219":
-            from hardware.sensors.INA219 import _INA219
-            sensor = _INA219(address)
-
-            Publisher(topic, BatteryState, sensor.read).start()
-
-def handle_cameras():
-    for index in range (0, parser.cameras()):
-        kind, model , color_obj, depth_obj = parser.get_camera(index)
-
-        if kind == "realsense":
-            arguments = " filters:=pointcloud Initial_reset:=true "
-         
-            depth_en = depth_obj["enable"]
-            if depth_en == "true":
-                depth_fps = depth_obj["rate"]
-                depth_res = depth_obj["resolution"]
-                depth_width = depth_res[0]
-                depth_height = depth_res[1]
-
-                arguments += "depth_width:={} depth_height:={} depth_fps:={} ".format(depth_width, depth_height, depth_fps)
-
-            color_en = color_obj["enable"]
-            if color_en == "true":
-                color_fps = color_obj["rate"]
-                color_res = color_obj["resolution"]
-                color_width = color_res[0]
-                color_height = color_res[1]
-
-                arguments += "color_width:={} color_height:={} color_fps:={}".format(color_width, color_height, color_fps)
-            
-
-            execute(". ~/catkin_ws/devel/setup.sh && roslaunch realsense2_camera rs_camera.launch {}".format(arguments))
-            
-def handle_lidar():
-    kind, *_ = parser.get_lidar()
-
-    if kind == "RPLidar":
-        execute(". ~/catkin_ws/devel/setup.sh && roslaunch rplidar_ros rplidar.launch")
-            
-def handle_driver():
-
-    pid, radius, kind, address, flip = parser.get_driver()
-
-    # switch based on driver type
-    if kind == "sparkfun":
-        sparkfun = SparkfunDriver(radius=radius, flip=flip)
-
-        # check for connection 
-        if address in scan_bus():
-
-            sub = Subscriber(
-                topic="cmd_vel", 
-                message=Twist,
-                callback=sparkfun.update)
-
-            sub.start()
-
-    if kind == "L298N":
-        print("sorry, motor driver not implemented yet")
-        pass
-
-    if kind == "adafruit":
-        print("sorry, motor driver not implemented yet")
-        pass
-
-def handle_filter():
-    execute("rosrun imu_complementary_filter complementary_filter_node _fixed_frame:=camera_link, _use_mag:=false _do_bias_estimation:=true _do_adaptive_gain:=false _publish_tf:=true")
-
-'''
+    for thread in factory.threads.values(): 
+        if thread is not None:
+            print(thread)
 
 
 
-
+    
