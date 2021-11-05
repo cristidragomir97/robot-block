@@ -1,19 +1,20 @@
 import json, importlib, importlib.machinery, rospy
 
 from colorama import Fore
-from library import Library, Package
-from config import Config, Interface, Device, External
-from subscriber import Subscriber
-from publisher import Publisher
-from api import API
+from core.library import Library, Package
+from core.config import Config, Interface, Device, External
+from core.subscriber import Subscriber
+from core.publisher import Publisher
+from core.api import API
+from core.utils import *
 
 class Factory():
 
-    def __init__(self):
+    def __init__(self, library, config):
         self.threads = {}
 
-        self.lib = Library()
-        self.conf = Config('../config.json')
+        self.lib = library
+        self.conf = config
 
         self.lib.pretty_print()
         self.conf.pretty_print()
@@ -34,10 +35,20 @@ class Factory():
             elif device.role == "external":
                 thread = self.make_external(device)
                 self.threads[device.topic] = thread
-
-
     
+        print(self.threads)
     
+    def reload(self):
+
+        for thread in self.threads.values():
+            if thread is not None:
+                print(thread)
+                print(thread.stopped())
+                if thread.stopped() is not True:
+                    print("stopping current thread")
+                    thread.stop()
+              
+
     def make_pubsub(self, dev):
         try:
             # looks into hashmap and retrieves the package object for the device name given in the config file
@@ -106,17 +117,4 @@ class Factory():
 
         
 
-if __name__ == "__main__":
-    rospy.init_node("bot", anonymous=False, disable_signals=True)
-    factory = Factory()
-    api = API(factory)
-    api.start()
 
-
-    for thread in factory.threads.values(): 
-        if thread is not None:
-            thread.start()
-
-
-
-    

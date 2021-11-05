@@ -29,10 +29,11 @@ class Library():
         self.packages = dict()
         
 
-        library_dir = os.path.realpath('../library')
+        library_dir = os.path.realpath('library')
         library_folders = [f.path  for f in os.scandir(library_dir) if f.is_dir()]
 
         for full_path in library_folders:
+            print(full_path)
             name = full_path.split("/").pop()
             json_filename = full_path + '/{}.json'.format(name)
             python_filename = full_path + '/{}.py'.format(name)

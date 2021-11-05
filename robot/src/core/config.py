@@ -1,15 +1,32 @@
 import json 
 from colorama import Fore
-from utils import execute
+
+def execute(command):
+    process = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+    output = ''
+
+    # Poll process for new output until finished
+    for line in iter(process.stdout.readline, ""):
+        print(line)
+        output += str(line)
+
+    process.wait()
+    exitCode = process.returncode
+
+    if (exitCode == 0):
+        return output
+    else:
+        raise Exception(command, exitCode, output)
 
 class Interface():
     def __init__(self, obj):
         try:
+            self.name = obj["name"]
             self.library = obj["library"]  
-            self.signal = obj["signal"]
             self.address = obj["address"]  
             self.channels = obj["channels"]
         except KeyError as k:
+            raise Exception("CE PULA MEA")
             formatted = json.dumps(obj, indent=4)                                
             print("{}[error] Can't load interface. Field {} is missing.\n{}{}\n  ".format(Fore.RED, k, Fore.RESET, formatted))
 
@@ -42,7 +59,7 @@ class External():
         except KeyError as k:
             formatted = json.dumps(obj, indent=4)                                
             print("{}[error] Can't load external. Field {} is missing.\n{}{}\n  ".format(Fore.RED, k, Fore.RESET, formatted))
-
+    
     def cli(self):
         shell = ". ~/catkin_ws/devel/setup.sh &&"
         shell += " " + self.command
@@ -60,39 +77,52 @@ class External():
 class Config():
 
     def __init__(self, _file):
-        self.dev = []
-        self.ext = []
-        self.interface = []
-
+        print("FILEEEE: {}".format(_file))
+      
         with open(_file) as f:
+            _, self.dev, self.ext, self.interface = self.parse(json.load(f)[0])
+           
+    
+    def parse(self, contents):
+        err = []
+        dev = []
+        ext = []
+        interface = []
 
-            try:
-                contents = json.load(f)[0]
-                self.name = contents["name"]
-                self.desc = contents["desc"]
-
+        try:
+                name = contents["name"]
+                desc = contents["desc"]
                 components = contents["components"]
                 
                 if "interface" in components:
                     for element in components["interface"]:
-                        self.interface.append(Interface(element))
+                        interface.append(Interface(element))
 
                 if "sensors" in components:
                     for element in components["sensors"]:
-                        self.dev.append(Device(element))
+                        dev.append(Device(element))
 
                 if "actuators" in components:
                     for element in components["actuators"]:
-                        self.dev.append(Device(element))
+                        dev.append(Device(element))
 
                 if "external" in components:
                     for element in components["external"]:
-                        self.ext.append(External(element))
+                        ext.append(External(element))
 
-            except KeyError as k:
-                    print(Fore.YELLOW + "[warning] Can't load {} - field {} is missing ".format(self.name, k) + Fore.RESET)
-            except json.decoder.JSONDecodeError as j:
-                print(Fore.YELLOW + "[warning] JSON malformed: {}".format(j) + Fore.RESET)
+        except Exception as e :
+            print(Fore.YELLOW + "[warning] Can't load {} - field {} is missing ".format(self.name, k) + Fore.RESET)
+            err.append(
+                json.dumps(e,
+                    default = lambda o: o.__dict__,
+                    sort_keys = True,
+                    indent = 4)
+            )
+        #except json.decoder.JSONDecodeError as j:
+            #print(Fore.YELLOW + "[warning] JSON malformed: {}".format(j) + Fore.RESET)
+            #err.append(str(j))
+
+        return err, dev, ext, interface
 
     def pretty_print(self):
         print(Fore.GREEN, "DEVICES: ")
@@ -105,7 +135,7 @@ class Config():
         
         print(Fore.MAGENTA, "INTERFACES: ")
         for io in self.interface:
-            print("\t * ", io.library, io.signal, io.address, io.channels)
+            print("\t * ", io.name, io.library,  io.address, io.channels)
 
         print(Fore.RESET)
 

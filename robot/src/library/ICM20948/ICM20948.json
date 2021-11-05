@@ -1,0 +1,8 @@
+{
+    "categ": "sensors",
+    "type": "IMU",
+    "name": "ICM20948",
+    "callback": "read",
+    "ros_message": "sensor_msgs.msg.Imu",
+    "address": ["0x69"]
+}

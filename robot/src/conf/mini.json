@@ -1,0 +1,86 @@
+[{
+    "name": "balenabot_mini", 
+    "desc": "Low-cost robot based around Sparkfun Auto pHAT",
+    "components":{
+
+        "interface": [
+            {   
+                "name":"PWM0",
+                "library":"PCA9685",
+                "address": "0x7f",
+                "channels": [0, 1, 2, 3]
+            },
+            {   "name": "ADC0",
+                "library":"ADS1115",
+                "address": "0x7f",
+                "channels": [0, 1, 2, 3]
+            }
+        ],
+
+        "actuators": [
+            {
+                "type": "driver",
+                "role": "subscriber",
+                "topic": "/cmd_vel",
+                "library": "SCMD",
+                "address": "0x5d", 
+                "args":{
+                    "radius": 0.0325,
+                    "flip": "true"
+                }
+            }
+        ],
+
+        "sensors": [
+            {
+                "type": "ranging",
+                "library": "SRF05",
+                "role": "publisher",
+                "topic": "/range/center",      
+                "args":{
+                    "GPIO": "pi"
+
+                }
+            }, 
+            {
+                "type": "motion",
+                "topic": "/imu/raw",
+                "role": "publisher",
+                "library":"ICM20948",
+                "args":{
+                    "address": "0x69"
+                } 
+            }
+        ],
+
+        "external":[
+            {
+                "name": "rplidar",
+                "role": "external",
+                "source": "~/catkin_ws/rpilidar_ros",
+                "build": "false",
+                "command": "roslaunch",
+                "package": "rplidar_ros",
+                "file": "rpildar.launch",
+                "args": {}
+            },
+            {
+                "name":"imu_filter",
+                "role": "external",
+                "build": "false",
+                "source": "",
+                "command": "rosrun",
+                "package": "imu_complementary_filter",
+                "file": "complementary_filter_node",
+                "args": {
+                    "fixed_frame": "camera_link",
+                    "use_mag": "false",
+                    "do_bias_estimation": "true", 
+                    "do_adaptive_gain": "false", 
+                    "publish_tf": "true"
+                }
+            }
+        ]
+
+    }
+}]

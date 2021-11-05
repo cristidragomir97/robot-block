@@ -1,0 +1,9 @@
+{
+    "categ": "sensorr",
+    "type": "encoder",
+    "name": "SparkfunTwist",
+    "callback": "read",
+    "ros_message": ["nav_msgs.msg", "Odometry"],
+    "bus": "I2C",
+    "address": "0x5d"
+}

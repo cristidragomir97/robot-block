@@ -6,15 +6,16 @@ class Subscriber(threading.Thread):
   
         threading.Thread.__init__(self)
         rospy.Subscriber(topic, message, callback)
+        self._stop = threading.Event()
 
     def run(self):
         rospy.spin()
   
-    
-    def get_id(self):
-        # returns id of the respective thread
-        if hasattr(self, '_thread_id'):
-            return self._thread_id
-        for id, thread in threading._active.items():
-            if thread is self:
-                return id
+    # function using _stop function
+    def stop(self):
+        self._stop.set()
+ 
+    def stopped(self):
+        return self._stop.isSet()
+
+

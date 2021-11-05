@@ -3,9 +3,7 @@ import threading
 
 class Publisher(threading.Thread):
     def __init__(self, topic, message, callback, queue_size=100, rate=24):
-        pass 
 
-        """
         threading.Thread.__init__(self)
 
         pub = rospy.Publisher(topic, message, queue_size=queue_size)
@@ -13,22 +11,18 @@ class Publisher(threading.Thread):
 
         self.pub = pub
         self.callback = callback
-      
-        """
-       
+        self._stop = threading.Event()
+        
+    # function using _stop function
+    def stop(self):
+        self._stop.set()
+ 
+    def stopped(self):
+        return self._stop.isSet()
 
+      
+  
     def run(self):  
-        """
         while True:
             ret = self.callback()
             self.pub.publish(ret)
-        """
-    
-    def get_id(self):
- 
-        # returns id of the respective thread
-        if hasattr(self, '_thread_id'):
-            return self._thread_id
-        for id, thread in threading._active.items():
-            if thread is self:
-                return id
