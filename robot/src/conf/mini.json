@@ -53,7 +53,7 @@
             }
         ],
 
-        "external":[
+        "scripts":[
             {
                 "name": "rplidar",
                 "role": "external",
@@ -64,7 +64,7 @@
                 "file": "rpildar.launch",
                 "args": {}
             },
-            {
+            { 
                 "name":"imu_filter",
                 "role": "external",
                 "build": "false",

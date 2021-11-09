@@ -1,4 +1,4 @@
-import threading, time, json
+import threading, time, json, os
 import tornado.ioloop, tornado.web
 from core.config import Config, Device, External, Interface
 
@@ -83,9 +83,16 @@ class API(threading.Thread):
         workersEndpoint = (r"/api/workers", WorkersEndpoint, {'factory': factory})
         workerEndpoint = (r"/api/worker/([^/]+)?/([^/]+)?", WorkerEndpoint, {'factory': factory})
 
+        path = os.path.dirname(os.path.realpath(__file__)).replace('/core', '/web')
+        print(path)
         
+        static =  (r"/(.*)", tornado.web.StaticFileHandler, 
+                            {'path': path, 
+                            'default_filename': 'index.html'})
 
-        self.app = tornado.web.Application([configEndpoint, reloadEndpoint, workersEndpoint, workerEndpoint])
+
+
+        self.app = tornado.web.Application([configEndpoint, reloadEndpoint, workersEndpoint, workerEndpoint, static])
     
     def start(self):
         self.app.listen(8000)

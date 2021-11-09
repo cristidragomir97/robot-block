@@ -36,62 +36,23 @@ class Factory():
                 thread = self.make_external(device)
                 self.threads[device.topic] = thread
     
-        print(self.threads)
     
     def reload(self):
 
         for thread in self.threads.values():
             if thread is not None:
-                print(thread)
-                print(thread.stopped())
                 if thread.stopped() is not True:
                     print("stopping current thread")
                     thread.stop()
               
-
-    def make_pubsub(self, dev):
-        try:
-            # looks into hashmap and retrieves the package object for the device name given in the config file
-            package = self.lib.get_package(dev.library)
-
-            # cretes source loader, where package.name is the class name, and package.python is the path to the source file
-            loader = importlib.machinery.SourceFileLoader(package.name, package.python)
-            
-            # imports the python source file in the current context 
-            module = loader.load_module()
-            
-            # basically retrieves constructor for the device 
-            instance = getattr(module, package.name)
-            
-            # runs constructor, unpacks arguments, and initialises object
-            instance = instance(*list(dev.args.values()))
-            
-            # gets callback method 
-            callback = getattr(instance, package.callback)
-            
-            # imports the ROS messages 
-            message = importlib.import_module(package.ros_message[0])
-            message = getattr(message, package.ros_message[1])
-            
-            return dev.topic, message, callback
-
-        except AttributeError as e:
-            print(dev.library, " has not been found library. Error: ", e)
-            return None, None, None
-        except KeyError as e:
-            print(Fore.RED + "[error] key {} is invalid".format(e) + Fore.RESET)
-            return None, None, None
-        
         
     def make_subscriber(self, dev):
-        topic, msg, cb =  self.make_pubsub(dev)
+        package = self.lib.get_package(dev.library)
 
-        if topic is not None:
-            return Subscriber(topic, msg, cb)
-        else:
-            print("skipping device")
+        if dev.topic is not None:
+            return Subscriber(dev.topic, package.ros_message, package.callback, package.name, package.python, dev.args)
+        
 
-            
     def make_publisher(self, dev):
         pass
         #return Publisher(self.make_pubsub(dev)).run()

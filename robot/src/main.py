@@ -1,5 +1,6 @@
 import rospy, argparse, sys, time, os
 
+from core.log import Log
 from core.library import Library
 from core.config import Config
 from core.factory import Factory 
@@ -29,6 +30,8 @@ if __name__ == "__main__":
     args = parse_arguments()
     ros_startup(args)
     
+    sys.stdout = Log()
+    sys.stdout.register('mainthread.log')
     
     library = Library()
     config_path = os.getcwd() + "/" + args.config
@@ -41,3 +44,5 @@ if __name__ == "__main__":
         api = API(factory, config)
         api.start()        
 
+    for thread in factory.threads.values():
+        factory.threads[thread].start()

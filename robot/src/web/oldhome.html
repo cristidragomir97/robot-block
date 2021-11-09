@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+        <meta name="description" content="" />
+        <meta name="author" content="" />
+        <title>Simple Sidebar - Start Bootstrap Template</title>
+        <!-- Favicon-->
+        <link rel="icon" type="image/x-icon" href="assets/favicon.ico" />
+        <!-- Core theme CSS (includes Bootstrap)-->
+        <link href="https://cdn.jsdelivr.net/npm/bootswatch@4.5.2/dist/darkly/bootstrap.min.css"rel="stylesheet" />
+        <link href="css/styles.css" rel="stylesheet" />
+    </head>
+    <body>
+        <nav class="navbar navbar-expand-lg navbar-dark bg-darj">
+            <a class="navbar-brand" href="#">Robot Block</a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
+              <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+              <div class="navbar-nav">
+                <a class="nav-item nav-link active" href="#">Config <span class="sr-only">(current)</span></a>
+                <a class="nav-item nav-link" href="#">Workers</a>
+                <a class="nav-item nav-link" href="#">Pricing</a>
+                <a class="nav-item nav-link disabled" href="#" tabindex="-1" aria-disabled="true">Disabled</a>
+              </div>
+            </div>
+          </nav>
+        <div id="wrapper" class="toggled">
+
+            <!-- Sidebar -->
+            <div id="sidebar-wrapper">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th class="border-0 text-uppercase small font-weight-bold">Topic</th>
+                            <th class="border-0 text-uppercase small font-weight-bold">Type</th>
+                            <th class="border-0 text-uppercase small font-weight-bold">Channel</th>
+                            <th class="border-0 text-uppercase small font-weight-bold">Library</th>
+                            <th class="border-0 text-uppercase small font-weight-bold">Status</th>
+                            <th class="border-0 text-uppercase small font-weight-bold">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>/cmd/vel</td>
+                            <td>Driver</td>
+                            <td>Subscriber</td>
+                            <td>SCMD</td>
+                            <td>LOADED</td>
+                            <td><button type="button" class="btn btn-success">Start</button></td>
+                        </tr>
+                        <tr>
+                            <td>/imu/raw</td>
+                            <td>Sensor</td>
+                            <td>Publisher</td>
+                            <td>ICM20948</td>
+                            <td>STARTED</td>
+                            <td><button type="button" class="btn btn-warning">Restart</button></td>
+                        </tr>
+                      
+                    </tbody>
+                </table>
+                   
+            </div>
+   
+            <!-- /#sidebar-wrapper -->
+           
+            <!-- Page Content -->
+            <div id="page-content-wrapper">
+               
+           
+                <div class="container-fluid">
+                    <div class="row">
+                        <div id="editor"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+            <!-- /#page-content-wrapper -->
+    
+
+        <!-- Bootstrap core JS-->
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.1/dist/js/bootstrap.bundle.min.js"></script>
+        <!-- Core theme JS-->
+       
+
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.4.13/ace.js" type="text/javascript" charset="utf-8"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.4.13/theme-clouds_midnight.min.js" type="text/javascript" charset="utf-8"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.4.13/theme-tomorrow_night_bright.min.js" type="text/javascript" charset="utf-8"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.4.13/theme-tomorrow_night.min.js" type="text/javascript" charset="utf-8"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.4.13/theme-pastel_on_dark.min.js" type="text/javascript" charset="utf-8"></script>
+        <script src="js/scripts.js"></script>
+        <script>
+            var editor = ace.edit("editor");
+            editor.setTheme("ace/theme/clouds_midnight");
+            editor.session.setMode("ace/mode/json");
+            editor.setOptions({
+                maxLines: Infinity,
+                fontSize: "12pt"
+            });
+
+         
+        </script>
+
+
+    </body>
+</html>
