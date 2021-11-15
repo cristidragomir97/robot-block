@@ -80,7 +80,8 @@ class Config():
         print("FILEEEE: {}".format(_file))
       
         with open(_file) as f:
-            _, self.dev, self.ext, self.interface = self.parse(json.load(f)[0])
+            self.contents = json.load(f)[0]
+            _, self.dev, self.ext, self.interface = self.parse(self.contents)
            
     
     def parse(self, contents):
@@ -147,3 +148,6 @@ class Config():
 
     def external(self):
         return self.ext
+
+    def contents(self):
+        return self.contents

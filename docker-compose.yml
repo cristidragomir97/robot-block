@@ -1,14 +1,20 @@
 version: '2.1'
 
-services:
-  platform:
-    build: ./platform
-    restart: always
+services:    
+  core:
+    privileged: true
+    build: ./robot-block
+    labels:
+      io.balena.features.balena-socket: 1
+      io.balena.features.sysfs: 1
+      io.balena.features.supervisor-api: 1
+    ports:
+      - "5000:5000"
     network_mode: host
     environment: 
-        - ROS_IP=192.168.100.90
-        - ROS_HOSTNAME=192.168.100.90
-        - ROS_MASTER_URI=http://192.168.100.90:11311
+#        - ROS_IP=192.168.100.90
+#        - ROS_HOSTNAME=192.168.100.90
+#        - ROS_MASTER_URI=http://192.168.100.90:11311
         - UDEV=1
     privileged: true
     devices:

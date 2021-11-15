@@ -3,6 +3,7 @@ import tornado.ioloop, tornado.web
 from core.config import Config, Device, External, Interface
 
 class ConfigEndpoint(tornado.web.RequestHandler):
+    
     def initialize(self, factory, config):
         self.factory = factory
         self.config = config
@@ -11,21 +12,17 @@ class ConfigEndpoint(tornado.web.RequestHandler):
         err_cls, err, traceback = kwargs['exc_info']
         print(err_cls, err, traceback)
         
-
-    def get(self, id):
+    def get(self):
         self.write(self.config.contents)
 
     def post(self):
         self.set_header("Content-Type", "text/json")
+        data = self.request.body.decode("utf8")
         data = json.loads(self.request.body)
-        
-        try:
-            err, _, _, _ = self.config.parse(data[0])
-            self.write(json.dumps({"errors":err}))
-        except Exception as e:
-            self.write(json.dumps({"error":[e]}))
+        print(json.dumps(data, indent = 4))
         
 class ReloadEndpoint(tornado.web.RequestHandler):
+    
     def initialize(self, factory):
         self.factory = factory
         print(self.factory)
@@ -36,6 +33,7 @@ class ReloadEndpoint(tornado.web.RequestHandler):
         self.write(json.dumps({'info':'reloaded workers'}))
 
 class WorkersEndpoint(tornado.web.RequestHandler):
+    
     def initialize(self, factory):
         self.factory = factory
         print(self.factory)
@@ -53,6 +51,7 @@ class WorkersEndpoint(tornado.web.RequestHandler):
         self.write(json.dumps(obj))
 
 class WorkerEndpoint(tornado.web.RequestHandler):
+
     def initialize(self, factory):
         self.factory = factory
         print(self.factory)
@@ -75,6 +74,7 @@ class WorkerEndpoint(tornado.web.RequestHandler):
             self.write({'error':e})
 
 class API(threading.Thread):
+
     def __init__(self, factory, config):
         threading.Thread.__init__(self)
 
@@ -89,8 +89,6 @@ class API(threading.Thread):
         static =  (r"/(.*)", tornado.web.StaticFileHandler, 
                             {'path': path, 
                             'default_filename': 'index.html'})
-
-
 
         self.app = tornado.web.Application([configEndpoint, reloadEndpoint, workersEndpoint, workerEndpoint, static])
     

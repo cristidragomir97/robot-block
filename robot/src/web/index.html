@@ -4,13 +4,18 @@
 
 
  <head>
-
+    <meta content="text/html;charset=utf-8" http-equiv="Content-Type">
+    <meta content="utf-8" http-equiv="encoding">    
     <link href="https://stackpath.bootstrapcdn.com/bootswatch/4.5.2/darkly/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
     <link href="css/styles.css" rel="stylesheet">
+
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js" crossorigin="anonymous"></script>
+
  </head>
 
- <body>      
+ <body>    
+
     <nav class="navbar navbar-expand-sm navbar-dark">
         <a class="navbar-brand" href="#">
             <img src="icon.svg" width="32" height="32" class="d-inline-block align-top" alt=""> 
@@ -23,32 +28,46 @@
 
         <ul class="navbar-nav ml-auto">
 
-          
             <li class="nav-item">
-                <button type="button" class="btn btn-outline-warning"><i class="fas fa-sync-alt"></i>&nbsp Reload</button>
+                <button type="button" id="reload1" onClick="reload()" class="btn btn-outline-warning"><i class="fas fa-sync-alt"></i>&nbsp Reload</button>
             </li>
         </ul>
     </nav>
 
-    <div class="container">
-
+    <div class="container-fluid">
         <div class="row">
-            <div class="col-lg-12">
-                <div class="card">
-                </div>
-            </div>
-        </div>
+            <div class="col-lg-7">
 
-        <div class="row">
-            <div class="col-lg-12">
                 <div class="card" >
-    
-                    <h5 class="card-header text-uppercase font-weight-bold text-muted">threads</h5>
-
+                    <h5 class="card-header text-uppercase font-weight-bold text-muted">CORE</h5>
                     <div class="card-body">
-                        <table style="border-collapse:collapse;" class="table" id="table">
+                        <table style="border-collapse:collapse;" class="table" id="table_core">
                             <thead>
-                                <tr >
+                                <th class="border-0 text-uppercase small text-muted font-weight-bold">Name</th>
+                                <th class="border-0 text-uppercase small text-muted font-weight-bold">Status</th>
+                                <th class="border-0 text-uppercase small text-muted font-weight-bold">Actions</th>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td class="text-uppercase font-weight-bold "> MAIN  </td>
+                                    <td class="text-uppercase text-muted">  ON  </td>
+                                    <td></td>
+                                </tr>
+                           
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div id="padder" style="padding-top: 20px"></div>
+
+
+                <div class="card" >
+                    <h5 class="card-header text-uppercase font-weight-bold text-muted">Devices</h5>
+                    <div class="card-body">
+                        <table style="border-collapse:collapse;" class="table" id="tbl">
+                            <thead>
+                                <tr>
                                     <th class="border-0 text-uppercase small text-muted font-weight-bold">Name</th>
                                     <th class="border-0 text-uppercase small text-muted font-weight-bold">Categ.</th>
                                     <th class="border-0 text-uppercase small text-muted font-weight-bold">Topic</th>
@@ -57,66 +76,61 @@
                                     <th class="border-0 text-uppercase small text-muted font-weight-bold">Status</th>
                                     <th class="border-0 text-uppercase small text-muted font-weight-bold">Actions</th>
                                 </tr>
-                             
                             </thead>
                             <tbody>
-                                
-                                <!-- TABLE CELL-->
-                                <tr  data-toggle="collapse" data-target="#collapseme">
-                                    <td><p class="text-uppercase font-weight-bold"><i class="fas fa-chevron-up"></i> &nbsp {NAME}</p> </td>
-                                    <td>{CATEG}</td>
-                                    <td>{TOPIC}</td>
-                                    <td>{CHANNEL}</td>
-                                    <td>{LIBRARY}</td>
-                                    <td><span class="started text-uppercase">{STATUS}</span></LOADED></td>
-                                    <td>
-                                        <button type="button" class="btn btn-link text-muted"><i class="fas fa-play"></i></button>
-                                        <button type="button" class="btn btn-outline-warning btn-inline"><i class="fas fa-sync-alt"></i></button>
-                                        <button type="button" class="btn btn-outline-danger btn-inline"><i class="fas fa-stop"></i></button>
-                                        
-                                    </td>
-                        
-                                </tr> 
-                                <tr>
-                                    <td colspan="12" class="zeroPadding">
-                                      <div class="collapse out" id="collapseme">
-                                        <div class="content">
-                                            {INSERT LOGS HERE}
-                                            </pre>
-                                        </div>
-                                      </div>
-                                    </td>
-                                </tr>
-    
-                      
-                                  
-                                    
-                        
-    
-                               
-                               
-                              
                             </tbody>
                         </table>
-                    </div>  
-                    
-                 
+                    </div>
+                </div>
 
-                 
+                <div id="padder" style="padding-top: 20px"></div>
+
+                <div class="card" >
+                    <h5 class="card-header text-uppercase font-weight-bold text-muted">Scripts</h5>
+                    <div class="card-body">
+                        <table style="border-collapse:collapse;" class="table" id="table_scripts">
+                            <thead>
+                                <tr>
+                                    <th class="border-0 text-uppercase small text-muted font-weight-bold">Script</th>
+                                    <th class="border-0 text-uppercase small text-muted font-weight-bold">Mode</th>
+                                    <th class="border-0 text-uppercase small text-muted font-weight-bold">Source</th>
+                                    <th class="border-0 text-uppercase small text-muted font-weight-bold">Status</th>
+                                    <th class="border-0 text-uppercase small text-muted font-weight-bold">Actions</th>
+                                </tr>
+                            </thead>
+
+                            <tbody>
+                                <tr>
+                                    <th>ROSCORE</th>
+                                    <th>-</th>
+                                    <th>-</th>
+                                    <th>RUNNING</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </tbody>
+                        
+                        
+                        </table>
+                    </div>
+                </div>
+
+                <div id="padder" style="padding-top: 20px"></div>
+
+                <div class="card" >
+                    <h5 class="card-header text-uppercase font-weight-bold text-muted">Containers</h5>
+                    <div class="card-body">
+                        <table style="border-collapse:collapse;" class="table" id="t"></table>
+                    </div>
                 </div>
             </div>
 
-           
-        </div>
-        
-        <div class="row" style="padding-top: 20px;">
-            <div class="col-lg-12">
+            <div class="col-lg-5">
                 <div class="card" >
                     <h5 class="card-header d-flex justify-content-between align-items-center text-uppercase font-weight-bold text-muted">
                        config.json
                         <span>
-                            <a href="#" class="btn btn-outline-success"><i class="fas fa-save"></i>&nbsp  Save Changes</a>
-                            <a href="#" class="btn btn-outline-warning"><i class="fas fa-sync-alt"></i>&nbsp Reload</a>
+                            <a href="#" id="save_changes" onClick="save()" class="btn btn-link"><i class="fas fa-save"></i>&nbsp  Save Changes</a>
+    
                         </span>
                        
                       </h5>
@@ -127,28 +141,42 @@
                 </div>
             </div>
         </div>
-                    
-    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+    </div>
+
+
+
+    
+        <div class="row" style="padding-top: 20px;">
+           
+        </div>
+        
+    </div>
+    <script src="js/table.js" type="text/javascript" charset="utf-8"></script>
+    <script src="js/api.js" xtype="text/javascript" charset="utf-8"></script>
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.4.13/ace.js" type="text/javascript" charset="utf-8"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.4.13/theme-clouds_midnight.min.js" type="text/javascript" charset="utf-8"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.4.13/theme-tomorrow_night_bright.min.js" type="text/javascript" charset="utf-8"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.4.13/theme-tomorrow_night.min.js" type="text/javascript" charset="utf-8"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.4.13/theme-solarized_dark.min.js" type="text/javascript" charset="utf-8"></script>
-    <script src="js/table.js"></script>
+  
     <script>
         var editor = ace.edit("editor");
-        editor.setTheme("ace/theme/solarized_dark");
-        editor.session.setMode("ace/mode/json");
+        editor.setTheme("ace/theme/tomorrow_night_bright");
         editor.renderer.setShowGutter(false);
         editor.setOptions({
             maxLines: Infinity,
             fontSize: "11pt"
         });
 
-     
-    </script>
+        editor.getSession().setMode("ace/mode/json");
+        
+        function sessionToJSON() {
+            return editor.getSession().getValue()
+        }
 
+
+
+        
+    </script>
  </body>
  
 
