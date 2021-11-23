@@ -1,4 +1,4 @@
-import os, json, importlib
+import os, json, importlib, sys
 from colorama import Fore
 
 class Package():
@@ -27,13 +27,13 @@ class Library():
 
     def __init__(self):
         self.packages = dict()
+        sys.stdout.register('logs/main.log')
         
 
         library_dir = os.path.realpath('library')
         library_folders = [f.path  for f in os.scandir(library_dir) if f.is_dir()]
 
         for full_path in library_folders:
-            print(full_path)
             name = full_path.split("/").pop()
             json_filename = full_path + '/{}.json'.format(name)
             python_filename = full_path + '/{}.py'.format(name)
@@ -63,13 +63,12 @@ class Library():
 
 
     def pretty_print(self):
-        print(Fore.YELLOW, "Packages: ")
+        print("- Packages: ")
         for package in self.packages: 
             p = self.packages[package]
-            print("\t * ", p.name, p.categ, p.type, p.callback, p.ros_message, p.python)
+            print("-->", p.name, p.categ, p.type, p.callback, p.ros_message)
         
-        print(Fore.RESET)
-
+    
 
     def has_package(self, package):
         return package in self.packages

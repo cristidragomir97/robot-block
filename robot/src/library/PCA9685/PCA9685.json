@@ -1,9 +1,0 @@
-{
-    "categ": "interface",
-    "type": "pwm",
-    "name": "PCA9685",
-    "callback": "read",
-    "ros_message": ["nav_msgs.msg", "Odometry"],
-    "bus": "I2C",
-    "address": "0x5d"
-}

@@ -1,5 +1,6 @@
 import rospy, argparse, sys, time, os
 
+from core.utils import *
 from core.log import Log
 from core.library import Library
 from core.config import Config
@@ -17,7 +18,6 @@ def parse_arguments():
 def ros_startup(args):
     try:
         if(args.roscore):
-            print(args.roscore)
             Roscore().run()
             time.sleep(5)
 
@@ -27,15 +27,15 @@ def ros_startup(args):
         sys.exit(1)
     
 if __name__ == "__main__":
+    delete_folder_contents('logs')
     args = parse_arguments()
     ros_startup(args)
     
     sys.stdout = Log()
-    sys.stdout.register('mainthread.log')
+    sys.stdout.register('logs/main.log')
     
     library = Library()
     config_path = os.getcwd() + "/" + args.config
-    print(config_path)
     
     config = Config(config_path)
     factory = Factory(library, config)
@@ -45,4 +45,4 @@ if __name__ == "__main__":
         api.start()        
 
     for thread in factory.threads.values():
-        factory.threads[thread].start()
+        print(thread)

@@ -3,8 +3,6 @@ import rospy, qwiic_scmd
 class SCMD():
      
     def __init__(self, radius, flip):
-    
-        print(radius, flip)
         self.radius = radius
         self.flip = flip
 

@@ -3,7 +3,25 @@
  * Copyright 2013-2016 Start Bootstrap
  * Licensed under MIT (https://github.com/BlackrockDigital/startbootstrap/blob/gh-pages/LICENSE)
  */
+ pre.bash {
+  background-color: black;
+  color: grey;
+  font-family: Consolas,Monaco,Lucida Console,Liberation Mono,DejaVu Sans Mono,Bitstream Vera Sans Mono,Courier New, monospace;
+ }
+ 
+.fixed-name
+{
+    width: 200px;
+}
 
+.fixed-status{
+  width: 80px;
+
+}
+
+.fixed-actions{
+  width: 120px;
+}
 
  body {
   overflow-x: hidden;

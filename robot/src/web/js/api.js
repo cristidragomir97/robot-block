@@ -29,6 +29,8 @@ function get_config(){
 }
 
 
+
+
 function reload(){
   $.ajax(path + "reload", {
     success: function(data) {
@@ -45,6 +47,13 @@ function save(){
   $.post(path + "config", contents)
   console.log(contents) 
 }
+
+
+$("button").click(function() {
+  console.log(this.id);
+});
+
+
 
 get_config()
 

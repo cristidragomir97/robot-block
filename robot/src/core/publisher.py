@@ -2,6 +2,7 @@
 import threading 
 
 class Publisher(threading.Thread):
+    
     def __init__(self, topic, message, callback, queue_size=100, rate=24):
 
         threading.Thread.__init__(self)
@@ -12,6 +13,7 @@ class Publisher(threading.Thread):
         self.pub = pub
         self.callback = callback
         self._stop = threading.Event()
+        self.isRunning = False
         
     # function using _stop function
     def stop(self):
@@ -23,6 +25,7 @@ class Publisher(threading.Thread):
       
   
     def run(self):  
+        self.isRunning = False
         while True:
             ret = self.callback()
             self.pub.publish(ret)

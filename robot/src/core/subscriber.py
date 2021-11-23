@@ -3,9 +3,10 @@ import threading, rospy, sys, importlib, importlib.machinery
 
 
 class Subscriber(threading.Thread):
-    def __init__(self,  topic, message, package_callback, package_name, package_source,  arguments):
+    def __init__(self,  name, topic, message, package_callback, package_name, package_source,  arguments):
+        self.isRunning = False
         threading.Thread.__init__(self)
-        sys.stdout.register('logs/sub{}.log'.format(topic.replace("/", "_")))
+        sys.stdout.register('logs/{}.log'.format(name.replace("/", "_").lower()))
 
         callback, message = self._instance(topic, message, package_callback, package_name, package_source, arguments)
         rospy.Subscriber(topic, message, callback)
@@ -35,6 +36,7 @@ class Subscriber(threading.Thread):
 
 
     def run(self):
+        self.isRunning = True
         rospy.spin()
   
     # function using _stop function

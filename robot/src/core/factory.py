@@ -1,8 +1,8 @@
-import json, importlib, importlib.machinery, rospy
+import json, importlib, importlib.machinery, rospy, sys
 
 from colorama import Fore
 from core.library import Library, Package
-from core.config import Config, Interface, Device, External
+from core.config import Config, Interface, Device, Script
 from core.subscriber import Subscriber
 from core.publisher import Publisher
 from core.api import API
@@ -11,6 +11,7 @@ from core.utils import *
 class Factory():
 
     def __init__(self, library, config):
+        sys.stdout.register('logs/main.log')
         self.threads = {}
 
         self.lib = library
@@ -20,49 +21,81 @@ class Factory():
         self.conf.pretty_print()
 
         for device in self.conf.devices():
+            
             if device.role == "publisher":
-                thread = self.make_publisher(device)
-                self.threads[device.topic] = thread
+                name, topic, categ, library, thread = self.make_publisher(device)
+                self.threads[name] = {
+                    'thread': thread, 
+                    'info': {
+                        'name': name,   
+                        'categ': categ,
+                        'topic': topic, 
+                        'library': library,
+                        'role': 'publisher'
+                    }
+                }
+
                 
             elif device.role == "subscriber":
-                thread = self.make_subscriber(device)
-                self.threads[device.topic] = thread
+                name, topic, categ, library, thread = self.make_subscriber(device)
+                self.threads[name] = {
+                    'thread': thread,
+                    'info': {
+                        'name': name,   
+                        'categ': categ,
+                        'topic': topic, 
+                        'library': library,
+                        'role': 'subscriber'
+                    }
+                }
 
             elif device.role == "service":
-                thread = self.make_service(device)
-                self.threads[device.topic] = thread
+                name, topic, categ, library, thread  = self.make_service(device)
+                self.threads[name] =  {
+                    'thread': thread, 
+                    'info': {
+                        'name': name,
+                        'categ': categ, 
+                        'topic': topic, 
+                        'library': library,
+                        'role': 'service'
+                    }
+                }
 
-            elif device.role == "external":
-                thread = self.make_external(device)
-                self.threads[device.topic] = thread
-    
+                
+
+        for script in self.conf.scripts():
+            self.threads[script.name] =  {
+                    'thread': script, 
+                    'info':{
+                        'name': script.name,
+                        'command': script.command, 
+                        'role': 'script'
+                    }
+                }
     
     def reload(self):
-
         for thread in self.threads.values():
             if thread is not None:
                 if thread.stopped() is not True:
-                    print("stopping current thread")
-                    thread.stop()
-              
+                    thread.stop() 
         
     def make_subscriber(self, dev):
         package = self.lib.get_package(dev.library)
-
-        if dev.topic is not None:
-            return Subscriber(dev.topic, package.ros_message, package.callback, package.name, package.python, dev.args)
+        name = dev.name.replace(" ", "_").lower()
+        subscriber = Subscriber(name, dev.topic, package.ros_message, package.callback, package.name, package.python, dev.args)
+        return name, dev.topic, dev.categ, package.name, subscriber
         
 
     def make_publisher(self, dev):
-        pass
-        #return Publisher(self.make_pubsub(dev)).run()
+        package = self.lib.get_package(dev.library)
+        if dev.topic is not None:
+            return dev.name.replace(" ", "_").lower(), dev.topic, dev.categ, package.name, None
 
-    def make_service(self, device):
-        pass
-
-    def make_external(self, device): 
-        print(device.cli())
-        pass
+    def make_service(self, dev):
+        package = self.lib.get_package(dev.library)
+        if dev.topic is not None:
+            return dev.name.replace(" ", "_").lower(), dev.topic, dev.categ, package.name, None
 
     def threads(self):
         return self.threads
@@ -73,9 +106,7 @@ class Factory():
     def start_thread(self, id):
         print("start thread: ",id)
 
-    def info_thread(self, id):
-        print("info thread: ",id)
 
-        
+
 
 

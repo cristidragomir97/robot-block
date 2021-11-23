@@ -24,6 +24,7 @@ class Roscore(object):
     """
     __initialized = False
     def __init__(self):
+        
         if Roscore.__initialized:
             raise Exception("You can't create more than 1 instance of Roscore.")
         Roscore.__initialized = True

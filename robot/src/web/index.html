@@ -27,7 +27,6 @@
         </ul>
 
         <ul class="navbar-nav ml-auto">
-
             <li class="nav-item">
                 <button type="button" id="reload1" onClick="reload()" class="btn btn-outline-warning"><i class="fas fa-sync-alt"></i>&nbsp Reload</button>
             </li>
@@ -42,22 +41,48 @@
                     <h5 class="card-header text-uppercase font-weight-bold text-muted">CORE</h5>
                     <div class="card-body">
                         <table style="border-collapse:collapse;" class="table" id="table_core">
-                            <thead>
-                                <th class="border-0 text-uppercase small text-muted font-weight-bold">Name</th>
-                                <th class="border-0 text-uppercase small text-muted font-weight-bold">Status</th>
-                                <th class="border-0 text-uppercase small text-muted font-weight-bold">Actions</th>
-                            </thead>
                             <tbody>
                                 <tr>
-                                    <td class="text-uppercase font-weight-bold "> MAIN  </td>
-                                    <td class="text-uppercase text-muted">  ON  </td>
-                                    <td></td>
+                                    <td data-toggle="collapse" data-target="#collapse_main">
+                                        <p  class="border-0 fixed-name text-uppercase text-muted font-weight-bold">
+                                            <i class="fas fa-chevron-up\"></i>
+                                            Main</p>
+                                    </td>
                                 </tr>
-                           
+               
+                                <tr>
+                                    <td id="main_drawer" colspan="12" class="zeroPadding">
+                                        <div class="collapse" id="collapse_main" >
+                                            <div class="content"> 
+                                                <pre class="text-muted" id="main_log"></pre>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+
+
+                                <tr>
+                                    <td data-toggle="collapse" data-target="#collapse_roscore">
+                                        <p  class="border-0 fixed-name text-uppercase text-muted font-weight-bold">
+                                            <i class="fas fa-chevron-up\"></i>
+                                            ROSCORE</p>
+                                    </td>
+                                </tr>
+               
+                                <tr>
+                                    <td id="roscore_drawer" colspan="12" class="zeroPadding">
+                                        <div class="collapse" id="collapse_roscore" >
+                                            <div class="content"> 
+                                                <pre class="text-muted" id="main_roscore"></pre>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
                             </tbody>
                         </table>
                     </div>
                 </div>
+    
 
                 <div id="padder" style="padding-top: 20px"></div>
 
@@ -65,16 +90,16 @@
                 <div class="card" >
                     <h5 class="card-header text-uppercase font-weight-bold text-muted">Devices</h5>
                     <div class="card-body">
-                        <table style="border-collapse:collapse;" class="table" id="tbl">
+                        <table style="border-collapse:collapse;" class="table" id="table_devices">
                             <thead>
                                 <tr>
-                                    <th class="border-0 text-uppercase small text-muted font-weight-bold">Name</th>
+                                    <th class="border-0 fixed-name text-uppercase small text-muted font-weight-bold">Name</th>
+                                    <th class="border-0 fixed-status text-uppercase small text-muted font-weight-bold">Status</th>
+                                    <th class="border-0 fixed-actions text-uppercase small text-muted font-weight-bold">Actions</th>
                                     <th class="border-0 text-uppercase small text-muted font-weight-bold">Categ.</th>
                                     <th class="border-0 text-uppercase small text-muted font-weight-bold">Topic</th>
                                     <th class="border-0 text-uppercase small text-muted font-weight-bold">Channel</th>
-                                    <th class="border-0 text-uppercase small text-muted font-weight-bold">Library</th>
-                                    <th class="border-0 text-uppercase small text-muted font-weight-bold">Status</th>
-                                    <th class="border-0 text-uppercase small text-muted font-weight-bold">Actions</th>
+                                    <th class="border-0 text-uppercase small text-muted font-weight-bold">Library</th>  
                                 </tr>
                             </thead>
                             <tbody>
@@ -91,22 +116,15 @@
                         <table style="border-collapse:collapse;" class="table" id="table_scripts">
                             <thead>
                                 <tr>
-                                    <th class="border-0 text-uppercase small text-muted font-weight-bold">Script</th>
-                                    <th class="border-0 text-uppercase small text-muted font-weight-bold">Mode</th>
-                                    <th class="border-0 text-uppercase small text-muted font-weight-bold">Source</th>
-                                    <th class="border-0 text-uppercase small text-muted font-weight-bold">Status</th>
-                                    <th class="border-0 text-uppercase small text-muted font-weight-bold">Actions</th>
+                                    <th class="border-0 fixed-name text-uppercase small text-muted font-weight-bold">Name</th>
+                                    <th class="border-0 fixed-status text-uppercase small text-muted font-weight-bold">Status</th>
+                                    <th class="border-0 fixed-actions text-uppercase small text-muted font-weight-bold">Actions</th>
+                                    <th class="border-0 text-uppercase small text-muted font-weight-bold">Command</th>
+                         
                                 </tr>
                             </thead>
 
                             <tbody>
-                                <tr>
-                                    <th>ROSCORE</th>
-                                    <th>-</th>
-                                    <th>-</th>
-                                    <th>RUNNING</th>
-                                    <th>Actions</th>
-                                </tr>
                             </tbody>
                         
                         
@@ -116,12 +134,29 @@
 
                 <div id="padder" style="padding-top: 20px"></div>
 
+              
                 <div class="card" >
                     <h5 class="card-header text-uppercase font-weight-bold text-muted">Containers</h5>
                     <div class="card-body">
-                        <table style="border-collapse:collapse;" class="table" id="t"></table>
+                        <table style="border-collapse:collapse;" class="table" id="table_containers">
+                            <thead>
+                                <tr>
+                                    <th class="border-0 fixed-name text-uppercase small text-muted font-weight-bold">Name</th>
+                                    <th class="border-0 fixed-status text-uppercase small text-muted font-weight-bold">Status</th>
+                                    <th class="border-0 fixed-actions text-uppercase small text-muted font-weight-bold">Actions</th>
+                                    <th class="border-0 text-uppercase small text-muted font-weight-bold">Image</th>
+                                    <th class="border-0 text-uppercase small text-muted font-weight-bold">Command</th>
+                         
+                                </tr>
+                            </thead>
+                            <tbody>
+                            </tbody>
+                        </table>
                     </div>
                 </div>
+             
+
+
             </div>
 
             <div class="col-lg-5">
@@ -151,8 +186,8 @@
         </div>
         
     </div>
-    <script src="js/table.js" type="text/javascript" charset="utf-8"></script>
     <script src="js/api.js" xtype="text/javascript" charset="utf-8"></script>
+    <script src="js/table.js" type="text/javascript" charset="utf-8"></script>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.4.13/ace.js" type="text/javascript" charset="utf-8"></script>
@@ -178,12 +213,3 @@
         
     </script>
  </body>
- 
-
-
-
- 
-
-    
-
-</

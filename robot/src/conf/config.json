@@ -1,32 +1,20 @@
 [{
-    "name": "balenabot_mini", 
-    "desc": "Low-cost robot based around Sparkfun Auto pHAT",
+    "name": "project_humpback", 
+    "desc": "kitchen sink included",
     "components":{
 
-        "interface": [
-            {   
-                "library":"PCA9685",
-                "signal":"PWM",
-                "address": "0x7f",
-                "channels": [0, 1, 2, 3]
-            },
-            {
-                "library":"ADS1115",
-                "signal":"ADC",
-                "address": "0x7f",
-                "channels": [0, 1, 2, 3]
-            }
-        ],
-
+        "interface": [],
         "actuators": [
-            {   "type": "servo",
+            {   
+                "name": "Camera Servo", 
+                "type": "servo",
                 "role": "service",
                 "topic": "/camera_servo",
-                "library": "I2CPWM",
-                "address": "PCA/0",
+                "library": "PIPWM",
                 "args":{}
             }, 
-            {
+            {   
+                "name": "Motor Driver", 
                 "type": "driver",
                 "role": "subscriber",
                 "topic": "/cmd_vel",
@@ -41,6 +29,7 @@
 
         "sensors": [
             {
+                "name": "Center ToF",
                 "type": "ranging",
                 "library": "VL53L1",
                 "role": "publisher",
@@ -50,17 +39,18 @@
                 }
             }, 
             {
+                "name": "Left ToF",
                 "type": "ranging",
                 "library": "VL53L1",
                 "role": "publisher",
                 "topic": "/range/left",
-                
                 "args":{
                     "address": "0x31"
                 }
                 
             }, 
-            {
+            {   
+                "name": "Right ToF",
                 "type": "ranging",
                 "library": "VL53L1",
                 "role": "publisher",
@@ -70,62 +60,21 @@
                 }
             },
             {
+                "name": "Motion Sensor",
                 "type": "motion",
                 "topic": "/imu/raw",
                 "role": "publisher",
                 "library":"LSM9DS1",
-                "address": ["0x1e", "0x6b"],
                 "args":{
-                    "publish_tf": true
+                    "address": ["0x1e", "0x6b"]
                 }
-                
-            },
-            {
-                "type": "power",
-                "library":"INA219",
-                "role": "publisher",
-                "topic": "/power/motors",
-                "address": "0x40",
-                "args":{}
             }
         ],
 
-        "external":[
+        "scripts":[
             {
-                "name": "camera",
-                "role": "external",
-                "source": "~/catkin_ws/realsense-ros",
-                "build": "false",
-                "command": "roslaunch",
-                "package": "realsense2_camera",
-                "file": "rs_camera.launch",
-                "args": {
-                    "color_width": "640",
-                    "color_height": "480",
-                    "color_fps": "15",
-                    "depth_width": "640",
-                    "depth_height": "480",
-                    "depth_fps": "15"
-                }
-            },
-            {
-                "name": "rplidar",
-                "role": "external",
-                "source": "~/catkin_ws/rpilidar_ros",
-                "build": "false",
-                "command": "roslaunch",
-                "package": "rplidar_ros",
-                "file": "rpildar.launch",
-                "args": {}
-            },
-            {
-                "name":"imu_filter",
-                "role": "external",
-                "build": "false",
-                "source": "",
-                "command": "rosrun",
-                "package": "imu_complementary_filter",
-                "file": "complementary_filter_node",
+                "name":"imu filter",
+                "command": "rosrun imu_complementary_filter complementary_filter_node",
                 "args": {
                     "fixed_frame": "camera_link",
                     "use_mag": "false",
@@ -133,8 +82,47 @@
                     "do_adaptive_gain": "false", 
                     "publish_tf": "true"
                 }
+            }, 
+            {   
+                "name": "rplidar",
+                "command": "roslaunch rplidar_ros rpildar.launch", 
+                "args":{
+                }
+            },
+            {   
+                "name": "rosboard",
+                "command": "rosrun rosboard rosboard_node", 
+                "args":{
+                }
+            },
+            {   
+                "name": "PiGPIO Daemon",
+                "command": "pigpiod", 
+                "args":{
+                }
+            }
+        ],
+
+        "containers":[
+            {
+                "name": "realsense_camera",
+                "image": "cristidragomir97/realsense-ros",
+                "command": "roslaunch ...",
+                "args": {
+                    "ROS_IP":"",
+                    "ROS_HOSTNAME":"",
+                    "ROS_MASTER_URI":"",
+                    "color_width": "640",
+                    "color_height": "480",
+                    "color_fps": "15",
+                    "depth_width": "640",
+                    "depth_height": "480",
+                    "depth_fps": "15"
+                }
             }
         ]
+
+
 
     }
 }]

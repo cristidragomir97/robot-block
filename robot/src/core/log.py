@@ -2,6 +2,7 @@ import threading, sys
 
 class Log(object):
     def __init__(self):
+        
         self.terminal = sys.stdout                  # To continue writing to terminal
         self.log={}                                 # A dictionary of file pointers for file logging
 

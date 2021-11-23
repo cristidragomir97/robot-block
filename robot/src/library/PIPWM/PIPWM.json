@@ -1,0 +1,9 @@
+{
+    "categ": "actuator",
+    "type": "driver",
+    "name": "PIPWM",
+    "callback": "update",
+    "ros_message": ["std_msgs.msg", "Int32"],
+    "bus": "I2C",
+    "address": "0x5d"
+}

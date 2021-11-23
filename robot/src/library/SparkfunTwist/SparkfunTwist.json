@@ -1,5 +1,5 @@
 {
-    "categ": "sensorr",
+    "categ": "sensor",
     "type": "encoder",
     "name": "SparkfunTwist",
     "callback": "read",
