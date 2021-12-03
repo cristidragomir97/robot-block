@@ -1,0 +1,17 @@
+{   
+    "name": "pwm_driver", 
+    "library": "PCA9648",
+    "channel_no": "4",
+    "channels":[
+        {   
+            "name": "camera_tilt_servo", 
+            "role": "service",
+            "pin": "0",
+            "topic": "/servo/tilt", 
+            "args":{}
+        }
+    ], 
+    "args":{
+        "address": "0x29"
+    }
+}, 

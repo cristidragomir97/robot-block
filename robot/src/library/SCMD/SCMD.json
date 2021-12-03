@@ -1,9 +1,12 @@
 {
-    "categ": "actuator",
-    "type": "driver",
     "name": "SCMD",
+    "info": "I2C/Serial Motor Driver",
+    "dependencies": [
+        {
+            "type": "pip3",
+            "package":"sparkfun-qwiic-scmd"            
+        }
+    ],
     "callback": "update",
-    "ros_message": ["geometry_msgs.msg", "Twist"],
-    "bus": "I2C",
-    "address": "0x5d"
+    "ros_message": ["geometry_msgs.msg", "Twist"]
 }

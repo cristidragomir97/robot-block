@@ -1,4 +1,5 @@
 import rospy, argparse, sys, time, os
+from pathlib import Path
 
 from core.utils import *
 from core.log import Log
@@ -27,6 +28,7 @@ def ros_startup(args):
         sys.exit(1)
     
 if __name__ == "__main__":
+    Path("logs").mkdir(parents=True, exist_ok=True)
     delete_folder_contents('logs')
     args = parse_arguments()
     ros_startup(args)

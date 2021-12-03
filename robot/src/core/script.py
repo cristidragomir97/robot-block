@@ -1,4 +1,4 @@
-import json, threading, sys
+import json, threading, sys, subprocess
 
 class Script(threading.Thread):
     def __init__(self, obj):

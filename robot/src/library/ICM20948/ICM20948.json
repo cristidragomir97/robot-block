@@ -1,8 +1,12 @@
 {
-    "categ": "sensors",
-    "type": "IMU",
     "name": "ICM20948",
+    "info": "9-Axis MEMS IMU",
+    "dependencies": [
+        {
+            "type": "pip3",
+            "package":"sparkfun-qwiic-icm20948"
+        }
+    ],
     "callback": "read",
-    "ros_message": "sensor_msgs.msg.Imu",
-    "address": ["0x69"]
+    "ros_message": ["sensor_msgs.msg","Imu"]
 }

@@ -1,33 +1,39 @@
-FROM ubuntu:20.04
+FROM balenalib/raspberrypi3-64-debian:buster
 
-ENV TZ=Europe/Amsterdam
-RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
+ARG ros_source=/opt/ros/noetic/setup.sh
+ARG catkin_ws=/root/catkin_ws
+ARG key_url=https://raw.githubusercontent.com/ros/rosdistro/master/ros.asc
 
+ENV ROS_MASTER_URI=http://localhost:11311
+ENV ROS_HOSTNAME=localhost
 
-RUN apt-get update && apt-get install -y python3-pip python3-dev python3 curl ca-certificates \
-    curl \
-    gnupg \
-    lsb-release \
-    tzdata
+RUN apt update && apt install -y lsb-release ca-certificates wget cmake build-essential  \
+    && echo "deb http://packages.ros.org/ros/ubuntu $(lsb_release -sc) main" > /etc/apt/sources.list.d/ros-latest.list \
+    && wget http://packages.ros.org/ros.key -O - | apt-key add - 
 
-RUN sh -c 'echo "deb http://packages.ros.org/ros/ubuntu $(lsb_release -sc) main" > /etc/apt/sources.list.d/ros-latest.list' && \
-        curl -s https://raw.githubusercontent.com/ros/rosdistro/master/ros.asc | apt-key add -
-
-RUN curl -fsSL https://download.docker.com/linux/ubuntu/gpg | gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg
-RUN echo \
-  "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/ubuntu \
-  $(lsb_release -cs) stable" | tee /etc/apt/sources.list.d/docker.list > /dev/null
-  
-# INSTALL THE MINIMUM AMOUNT OF ROS POSSIBLE
-RUN apt-get update && apt-get install -y ros-noetic-catkin \
+RUN install_packages curl python3 python3-pip python3-dev python3 python3-setuptools i2c-tools usbutils ros-noetic-catkin \
+    v4l-utils \
+    libopus-dev \
+    libvpx-dev \
+    libsrtp2-dev \
+    libopencv-dev \
+    libatlas3-base \
+    libatlas-base-dev \
+    libavcodec-dev \
+    libcamera0 \
+    libcamera-apps \
+    libcamera-tools \
+    libcamera-dev \
+    libraspberrypi0 \
+    libraspberrypi-dev \
+    libraspberrypi-doc \
     python3-catkin-pkg \
     ros-noetic-genmsg \
     ros-noetic-genpy \
     ros-noetic-std-msgs \
     python3-rosdep \
-    ros-noetic-rosbash \
     ros-noetic-rosboost-cfg \
-    ros-noetic-message-generation \x
+    ros-noetic-message-generation \
     ros-noetic-rosbuild \
     ros-noetic-rosclean \
     ros-noetic-roscreate \
@@ -52,30 +58,30 @@ RUN apt-get update && apt-get install -y ros-noetic-catkin \
     python3-rosinstall-generator \
     python3-wstool \
     python3-catkin-pkg-modules \
-    python3-rosdep-modules 
+    python3-rosdep-modules \
+    ros-noetic-sensor-msgs \
+    ros-noetic-cv-bridge 
 
-RUN echo "source /opt/ros/noetic/setup.bash" >> ~/.bashrc
-RUN source ~/.bashrc
+RUN . ${ros_source} && mkdir --parents ${catkin_ws}/src && cd ${catkin_ws} && catkin_make
 
-# TODO: Move to upper layers
-RUN apt-get update && apt-get install -y python3 python3-pip i2c-tools usbutils
+RUN cd ${catkin_ws}/src && \
+    git clone https://github.com/dheera/rosboard 
+
+RUN  . ${ros_source} && cd ${catkin_ws} && catkin_make && catkin_make install
+
+# Enable the v4l2 driver for the Raspberry Pi camera
+RUN printf "bcm2835-v4l2\n" >> /etc/modules
 
 # Set our working directory
-WORKDIR /usr/src/app
+WORKDIR /usr/deploy
 
-# Copy requirements.txt first for better cache on later pushes
 COPY requirements.txt requirements.txt
 
 # pip install python deps from requirements.txt on the resin.io build server
-RUN pip install -r requirements.txt
+RUN pip3 install --upgrade pip && pip3 install -r requirements.txt
 
 # This will copy all files in our root to the working  directory in the container
 COPY . ./
 
-# Enable udevd so that plugged dynamic hardware devices show up in our container.
-ENV UDEV=1
-
-RUN groupadd -f -r gpio && usermod -a -G gpio && modprobe i2c-dev 
-# main.py will run when container starts up on the device
-
-CMD sleep infinity
+CMD . /opt/ros/noetic/setup.sh \
+    && cd src && python3 main.py --roscore --api --config=conf/sudo.json

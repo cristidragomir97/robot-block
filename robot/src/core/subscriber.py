@@ -4,13 +4,21 @@ import threading, rospy, sys, importlib, importlib.machinery
 
 class Subscriber(threading.Thread):
     def __init__(self,  name, topic, message, package_callback, package_name, package_source,  arguments):
-        self.isRunning = False
         threading.Thread.__init__(self)
-        sys.stdout.register('logs/{}.log'.format(name.replace("/", "_").lower()))
-
-        callback, message = self._instance(topic, message, package_callback, package_name, package_source, arguments)
-        rospy.Subscriber(topic, message, callback)
         self._stop = threading.Event()
+        self.isRunning = False
+
+        callback, message = self._instance(
+            topic=topic, 
+            msg=message,
+            package_callback=package_callback,
+            package_name=package_name,
+            package_source=package_source,
+            arguments=arguments
+        )
+
+        rospy.Subscriber(topic, message, callback)
+        
 
     def _instance(self, topic, msg, package_callback, package_name, package_source, arguments):
         # cretes source loader, where package.name is the class name, and package.python is the path to the source file

@@ -1,20 +1,37 @@
-version: '2.1'
+version: '2'
+
+volumes:
+  pulse:  
 
 services:    
+  audio:
+    image: balenablocks/audio
+    privileged: true
+    ports:
+      - 4317:4317                 # Only required if using PA over TCP socket
+    volumes:
+      - 'pulse:/run/pulse'   
+           # Only required if using PA over UNIX socket
   core:
     privileged: true
     build: ./robot
     labels:
+      io.balena.features.kernel-modules: '1'
       io.balena.features.balena-socket: 1
       io.balena.features.sysfs: 1
       io.balena.features.supervisor-api: 1
     ports:
+      - "8000:80"
       - "5000:5000"
     network_mode: host
+    volumes:
+      - 'pulse:/run/pulse' 
     environment: 
         - UDEV=1
-#        - ROS_IP=192.168.100.90
-#        - ROS_HOSTNAME=192.168.100.90
-#        - ROS_MASTER_URI=http://192.168.100.90:11311
+        #- ROS_IP=192.168.0.244
+        #- ROS_HOSTNAME=d67581c.local
+        #- ROS_MASTER_URI=http://192.168.0.244:11311
     devices:
       - "/dev:/dev"
+
+        

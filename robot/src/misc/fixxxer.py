@@ -1,6 +1,6 @@
 import RPi.GPIO as GPIO
 import VL53L1X
-import time
+import time, sys
 
 # default address of VL53L1X
 ADDRESS = 0x29
@@ -27,24 +27,50 @@ def change(new):
     tof.close()
     time.sleep(0.5)
 
+def scan_bus():
+    import smbus2
+    lst = []
+
+    bus = smbus2.SMBus(1) # 1 indicates /dev/i2c-1
+
+    for device in range(128):
+
+        try:
+            bus.read_byte(device)
+            lst.append(str(hex(device)))
+
+        except: # exception if read_byte fails
+            pass
+
+    return lst
+
 if __name__ == "__main__":
-    GPIO.setmode(GPIO.BCM) 
-    GPIO.setwarnings(False) 
+    bus = scan_bus()
+    print(bus)
 
-    GPIO.setup(SENSOR_A, GPIO.OUT)
-    GPIO.setup(SENSOR_B, GPIO.OUT)
-    GPIO.setup(SENSOR_C, GPIO.OUT)
+    if "0x31" and "0x32" in bus:
+        sys.exit(0)
+    else:
+        GPIO.setmode(GPIO.BCM) 
+        try:
+            GPIO.setwarnings(False) 
 
-    # change address of second sensor
-    select(GPIO.HIGH, GPIO.LOW, GPIO.HIGH)
-    change(SENSOR_B_ADDRESS)
+            GPIO.setup(SENSOR_A, GPIO.OUT)
+            GPIO.setup(SENSOR_B, GPIO.OUT)
+            GPIO.setup(SENSOR_C, GPIO.OUT)
 
-    # change address of the last sensor
-    select(GPIO.HIGH, GPIO.HIGH, GPIO.LOW)
-    change(SENSOR_C_ADDRESS)
+            # change address of second sensor
+            select(GPIO.HIGH, GPIO.LOW, GPIO.HIGH)
+            change(SENSOR_B_ADDRESS)
 
-    # take sensors out of sleep
-    select(GPIO.HIGH, GPIO.HIGH, GPIO.HIGH)
+            # change address of the last sensor
+            select(GPIO.HIGH, GPIO.HIGH, GPIO.LOW)
+            change(SENSOR_C_ADDRESS)
+
+            # take sensors out of sleep
+            select(GPIO.HIGH, GPIO.HIGH, GPIO.HIGH)
+        except Exception as e:
+            print(e)
 
 
     

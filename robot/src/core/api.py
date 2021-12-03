@@ -1,6 +1,6 @@
 import threading, time, json, os, sys
 import tornado.ioloop, tornado.web
-from core.config import Config, Device, Script, Interface
+from core.config import Config, Device, Script
 
 
 class LogsEndpoint(tornado.web.RequestHandler):

@@ -1,0 +1,119 @@
+[{
+    "name": "sudo", 
+    "desc": "kitchen sink included",
+    "components":{
+        "output": [
+
+           
+            {   
+                "name": "motor_driver", 
+                "role": "subscriber",
+                "topic": "/cmd_vel",
+                "library": "SCMD",
+                "address": "0x5d", 
+                "args":{
+                    "radius": 0.0325,
+                    "flip": "true"
+                }
+            }
+        ],
+
+        "input": [
+            {   
+                "name": "ADC", 
+                "library": "ADS1115",
+                "channel_no":"4",
+                "channels":[
+                    {   
+                        
+                        "name": "front_right_floor", 
+                        "channel": "0",
+                        "role": "publisher",
+                        "topic": "/floor/front_right", 
+                        "args":{}
+                    },
+                    {   
+                        "name": "front_left_floor", 
+                        "role": "publisher",
+                        "channel": "1",
+                        "topic": "/floor/front_left", 
+                        "args":{}
+                    },
+                    {   
+                        "name": "right_floor", 
+                        "role": "publisher",
+                        "channel": "2",
+                        "topic": "/floor/right", 
+                        "args":{}
+                    },
+                    {   
+                        "name": "left_floor", 
+                        "role": "publisher",
+                        "channel": "3",
+                        "topic": "/floor/left", 
+                        "args":{}
+                    }
+                ], 
+                "args":{
+                    "address": "0x29"
+                }
+            }, 
+            {
+                "name": "Camera", 
+                "library": "picam",
+                "role": "publisher", 
+                "topic": "/image/raw", 
+                "args":{}
+            },
+            {
+                "name": "Center ToF",
+                "library": "VL53L1",
+                "role": "publisher",
+                "topic": "/range/center",      
+                "args":{
+                    "address": "0x29"
+                }
+            }, 
+            {
+                "name": "Left ToF",
+                "type": "ranging",
+                "library": "VL53L1",
+                "role": "publisher",
+                "topic": "/range/left",
+                "args":{
+                    "address": "0x31"
+                }
+                
+            }, 
+            {   
+                "name": "Right ToF",
+                "type": "ranging",
+                "library": "VL53L1",
+                "role": "publisher",
+                "topic": "/range/right", 
+                "args":{
+                    "address": "0x32"
+                }
+            }
+        ],
+
+        "scripts":[
+            {   
+                "name": "rosboard",
+                "command": "rosrun rosboard rosboard_node", 
+                "args":{
+                }
+            },
+            {
+                "name": "rplidar",
+                "source_catkin_ws": "true", 
+                "role": "external",
+                "build": "false",
+                "command": "roslaunch",
+                "package": "rplidar_ros",
+                "file": "rpildar.launch",
+                "args": {}
+            }
+        ]
+    }
+}]

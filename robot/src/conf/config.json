@@ -29,6 +29,14 @@
 
         "sensors": [
             {
+                "name": "Camera", 
+                "type": "camera", 
+                "library": "picam",
+                "role": "publisher", 
+                "topic": "/image/raw", 
+                "args":{}
+            },
+            {
                 "name": "Center ToF",
                 "type": "ranging",
                 "library": "VL53L1",
@@ -58,48 +66,16 @@
                 "args":{
                     "address": "0x32"
                 }
-            },
-            {
-                "name": "Motion Sensor",
-                "type": "motion",
-                "topic": "/imu/raw",
-                "role": "publisher",
-                "library":"LSM9DS1",
-                "args":{
-                    "address": ["0x1e", "0x6b"]
-                }
             }
         ],
 
         "scripts":[
-            {
-                "name":"imu filter",
-                "command": "rosrun imu_complementary_filter complementary_filter_node",
-                "args": {
-                    "fixed_frame": "camera_link",
-                    "use_mag": "false",
-                    "do_bias_estimation": "true", 
-                    "do_adaptive_gain": "false", 
-                    "publish_tf": "true"
-                }
-            }, 
-            {   
-                "name": "rplidar",
-                "command": "roslaunch rplidar_ros rpildar.launch", 
-                "args":{
-                }
-            },
             {   
                 "name": "rosboard",
                 "command": "rosrun rosboard rosboard_node", 
                 "args":{
                 }
-            },
-            {   
-                "name": "PiGPIO Daemon",
-                "command": "pigpiod", 
-                "args":{
-                }
+
             }
         ],
 
