@@ -16,14 +16,13 @@ soft_iron = [0.99, -0.002, -0.005, -0.002, 0.989, -0.075, -0.005, -0.075, 1.027]
 
 class ICM20948():
     def __init__(self, address):
-        self.sensor = qwiic_icm20948.QwiicIcm20948(address=address)
+        print(address)
+        self.sensor = qwiic_icm20948.QwiicIcm20948()
         self.sensor.begin()
 
         if self.sensor.connected == False:
             print("Qwiic ICM20948. Please check your connection", file=sys.stderr)
             return
-
-	
 
     def read(self):
         if self.sensor.dataReady():
@@ -50,5 +49,8 @@ class ICM20948():
         msg.linear_acceleration_covariance[8] = aOff[2] * aOff[2]
 
         return msg 
+
+
+
 
 

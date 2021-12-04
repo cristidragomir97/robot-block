@@ -4,7 +4,7 @@
     "dependencies": [
         {
             "type": "pip3",
-            "package":"adafruit-ads1x15"
+            "package":"adafruit-circuitpython-ads1x15"
         }
     ],
     "callback": ["read0","read1","read2","read3"],

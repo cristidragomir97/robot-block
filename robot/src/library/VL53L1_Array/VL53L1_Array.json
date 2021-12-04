@@ -1,0 +1,12 @@
+{
+    "name": "VL53L1_Array",
+    "info": "Time-of-Flight Range Sensor",
+    "dependencies": [
+        {
+            "type": "pip3",
+            "package":"vl53l1x"            
+        }
+    ],
+    "callback": ["read0","read1","read2"],
+    "ros_message": ["std_msgs.msg", "Int32"]
+}

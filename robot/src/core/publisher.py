@@ -1,6 +1,8 @@
 # import rospy
-import threading, rospy, sys, importlib, importlib.machinery
+import threading, rospy
 
+
+'''
 class Publisher(threading.Thread):
     
     def __init__(self, name, topic, message, package_callback, package_name, package_source,  arguments, queue_size=100, rate=24):
@@ -50,6 +52,27 @@ class Publisher(threading.Thread):
     def stopped(self):
         return self._stop.isSet()
   
+    def run(self):  
+        self.isRunning = False
+        while True:
+            ret = self.callback()
+            self.pub.publish(ret)
+
+'''
+import rospy
+import trace
+import threading, sys
+
+class Publisher(threading.Thread):
+    def __init__(self, topic, message, callback, queue_size=100, rate=60):
+        threading.Thread.__init__(self)
+        self.killed = False
+
+        pub = rospy.Publisher(topic, message, queue_size=queue_size)
+
+        self.pub = pub
+        self.callback = callback
+      
     def run(self):  
         self.isRunning = False
         while True:

@@ -20,6 +20,7 @@ class Script(threading.Thread):
             for argument in self.args:
                 self.shell += argument + ":=" + self.args[argument] + " "
 
+            print(self.shell)
         except KeyError as k:
             formatted = json.dumps(obj, indent=4)                                
             print("{}[error] Can't load external. Field {} is missing.\n{}{}\n  ".format(Fore.RED, k, Fore.RESET, formatted))
@@ -33,7 +34,8 @@ class Script(threading.Thread):
 
         # Poll process for new output until finished
         for line in iter(process.stdout.readline, ""):
-            print(line)
+            if len(line) > 0:
+                print(line)
 
         process.wait()
         exitCode = process.returncode

@@ -52,7 +52,6 @@ class WorkersEndpoint(tornado.web.RequestHandler):
     def initialize(self, factory):
         self.factory = factory
 
-
     def get(self):
         obj = []
             
@@ -68,19 +67,23 @@ class WorkerEndpoint(tornado.web.RequestHandler):
 
     def initialize(self, factory):
         self.factory = factory
-        print(self.factory)
 
     def get(self, _id, action):
+        print(_id, action)
         
         try:
             if action=="stop":
                 res = self.factory.stop_thread(_id)
+                print(res)
                 self.write(res)
+                
             elif action=="start":
                 res = self.factory.start_thread(_id)
+                print(res)
                 self.write(res)
             elif action=="info":
                 res = self.factory.info_thread(_id)
+                print(res)
                 self.write(res)
             else:
                 self.write({'nothing':''})

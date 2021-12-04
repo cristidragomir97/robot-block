@@ -3,8 +3,6 @@
     "desc": "kitchen sink included",
     "components":{
         "output": [
-
-           
             {   
                 "name": "motor_driver", 
                 "role": "subscriber",
@@ -20,13 +18,79 @@
 
         "input": [
             {   
-                "name": "ADC", 
-                "library": "ADS1115",
-                "channel_no":"4",
+                "name": "motion_sensor",
+                "library":"ICM20948",
+                "topic": "imu/data_raw",
+                "role": "publisher",
+                "args":{
+                    "address": "0x69"
+                } 
+            },
+            {   
+                "name": "Wheel Encoders", 
+                "library": "SparkfunTwist",
+                "channel_no": 2, 
                 "channels":[
                     {   
                         
-                        "name": "front_right_floor", 
+                        "name": "encoder_left", 
+                        "channel": "0",
+                        "role": "publisher",
+                        "topic": "/hall/left", 
+                        "args":{}
+                    },
+                    {   
+                        
+                        "name": "encoder_right", 
+                        "channel": "2",
+                        "role": "publisher",
+                        "topic": "/hall/right", 
+                        "args":{}
+                    }
+                ],
+                "args":{}
+            },
+
+            {   
+                "name": "ToF Array", 
+                "library": "VL53L1_Array",
+                "channel_no": 3, 
+                "channels":[
+                    {   
+                        
+                        "name": "range_center", 
+                        "channel": "0",
+                        "role": "publisher",
+                        "topic": "/range/center", 
+                        "args":{}
+                    },
+                    {   
+                        
+                        "name": "range_right", 
+                        "channel": "1",
+                        "role": "publisher",
+                        "topic": "/range/right",
+                        "args":{}
+                    },
+                    {   
+                        
+                        "name": "range_left", 
+                        "channel": "2",
+                        "role": "publisher",
+                        "topic": "/range/left", 
+                        "args":{}
+                    }
+                ],
+                "args":{}
+            },
+            {   
+                "name": "ADC", 
+                "library": "ADS1115",
+                "channel_no": 4, 
+                "channels":[
+                    {   
+                        
+                        "name": "floor_front_right", 
                         "channel": "0",
                         "role": "publisher",
                         "topic": "/floor/front_right", 
@@ -57,43 +121,6 @@
                 "args":{
                     "address": "0x29"
                 }
-            }, 
-            {
-                "name": "Camera", 
-                "library": "picam",
-                "role": "publisher", 
-                "topic": "/image/raw", 
-                "args":{}
-            },
-            {
-                "name": "Center ToF",
-                "library": "VL53L1",
-                "role": "publisher",
-                "topic": "/range/center",      
-                "args":{
-                    "address": "0x29"
-                }
-            }, 
-            {
-                "name": "Left ToF",
-                "type": "ranging",
-                "library": "VL53L1",
-                "role": "publisher",
-                "topic": "/range/left",
-                "args":{
-                    "address": "0x31"
-                }
-                
-            }, 
-            {   
-                "name": "Right ToF",
-                "type": "ranging",
-                "library": "VL53L1",
-                "role": "publisher",
-                "topic": "/range/right", 
-                "args":{
-                    "address": "0x32"
-                }
             }
         ],
 
@@ -104,15 +131,16 @@
                 "args":{
                 }
             },
-            {
-                "name": "rplidar",
-                "source_catkin_ws": "true", 
-                "role": "external",
-                "build": "false",
-                "command": "roslaunch",
-                "package": "rplidar_ros",
-                "file": "rpildar.launch",
-                "args": {}
+            { 
+                "name":"imu_filter",
+                "command": "rosrun imu_complementary_filter complementary_filter_node",
+                "args": {
+                    "fixed_frame": "camera_link",
+                    "use_mag": "false",
+                    "do_bias_estimation": "true", 
+                    "do_adaptive_gain": "false", 
+                    "publish_tf": "true"
+                }
             }
         ]
     }

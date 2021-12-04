@@ -1,0 +1,9 @@
+{
+    "categ": "sensors",
+    "type": "camera",
+    "name": "picam",
+    "callback": "read",
+    "ros_message": ["sensor_msgs.msg", "Image"],
+    "bus": "",
+    "address": "/dev/video0"
+}

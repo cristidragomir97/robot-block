@@ -1,24 +1,7 @@
-import os, json, importlib, sys, subprocess, pkg_resources 
+import os, json, importlib, sys, subprocess
 
-def install(package):
-    subprocess.check_call([sys.executable, "-m", "pip", "install", package])
-'''
-{
-    "name": "ICM20948",
-    "info": "9-Axis MEMS IMU",
-    "dependencies": [
-        {
-            "type": "pip3",
-            "package":"sparkfun-qwiic-icm20948"
-        }
-    ],
-    "callback": "read",
-    "ros_message": ["sensor_msgs.msg","Imu"],
-    "address": ["0x69"]
-}
-'''
 class Package():
-        def __init__(self, file):
+        def __init__(self, name, file):
             with open(file, 'r') as f:
                 try:
                     contents = json.load(f)
@@ -32,10 +15,13 @@ class Package():
                 
                     for dep in self.dependencies:
                         if dep["type"] == "pip3":
+                            pck = dep["package"]
                             # check if package is installed first 
+                            if not self.is_installed(pck):
+                                self.install(pck)
 
                             # and install if needed 
-                            install(dep["package"])
+                            
 
                 except Exception as e:
                     print(e)
@@ -44,6 +30,14 @@ class Package():
                 except KeyError as k:
                     print("[warning] Can't load {} - field is missing ".format(k))
                     self.valid = False
+
+        def install(self, package):
+            subprocess.check_call([sys.executable, "-m", "pip", "install", package])
+
+        def is_installed(self, name):
+            import pkg_resources 
+            installed_packages_list = sorted(["%s" % (i.key) for i in pkg_resources.working_set])
+            return name in installed_packages_list
 
         def is_valid(self):
             return self.valid
@@ -83,7 +77,7 @@ class Library():
         print("- Packages: ")
         for package in self.packages: 
             p = self.packages[package]
-            print("-->", p.name, p.info, p.dependencies, p.callback, p.ros_message, p.python)
+            print("-->", p.name, " - ", p.info)
     
 
     def has_package(self, package):

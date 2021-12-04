@@ -43,7 +43,7 @@ class Channel():
     
 
 class Device():
-    def __init__(self, name, obj):
+    def __init__(self, obj):
 
         self.channels = []
         try:
@@ -51,7 +51,7 @@ class Device():
             if ("channel_no" in obj):
                 self.channel_no = int(obj["channel_no"])
 
-                for item in range(0, int(obj["channel_no"]) - 1):
+                for item in range(0, int(obj["channel_no"]) ):
                     _name = obj["channels"][item]["name"]
                     _role = obj["channels"][item]["role"]
                     _pin = obj["channels"][item]["channel"]
@@ -59,6 +59,7 @@ class Device():
                     _args = obj["channels"][item]["args"]
 
                     self.channels.append(Channel(_name, _role, _pin, _topic, _args))
+                    print(_name, _role, _pin, _topic, _args)
 
             else:
                 self.channel_no = 0
@@ -71,6 +72,9 @@ class Device():
         except KeyError as k:
             formatted = json.dumps(obj, indent=4)                                
             print("[error] Can't load device. Field {} is missing.\n{}\n  ".format(k, formatted))
+
+    def get_channel(self, n):
+        return self.channels[n]
 
 
 
