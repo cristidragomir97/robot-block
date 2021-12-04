@@ -2,6 +2,7 @@
 //////////////////////////////////////////
 /// UX HELPERS
 //////////////////////////////////////////
+
 var logs = [];
 
 function create_id(_name, suffix){
@@ -31,13 +32,10 @@ function drawer(table, _name, content){
                 "></pre> \
             </div> \
         </div>" 
-
-    
-
 }
 
 function action_switches(_name, _status, status, actions){
-    var id_base = create_id(_name, "_status")
+    var id_base = create_id(_name, "")
 
     if(_status == "OFF"){
         status.innerHTML = "<p class=\"text-muted\">" + _status +"</p>";
@@ -221,8 +219,35 @@ function get_logs(){
     setTimeout(get_logs, 1000);
 }
 
+  
+function bind_buttons(){
+    $(document).on("click","button",function(){
+        var id = this.id.split("_")
+        var endpoint = path + "worker/" + id[0] + "_" + id[1] + "/" + id[2]
 
-add_containers("ros-realsense","cristidragomir/ros-realsense", "roslaunch realsense2_camera rs_camera.launch", "ON" )
-get_workers()
-get_logs()
-get_main()
+        $.ajax(endpoint, {
+            success: function(data) {
+              data = JSON.parse(data)
+              console.log(data)
+            }
+        });
+    });
+}
+
+function get_status(){
+    
+}
+
+
+$(document).ready(function(){
+    add_containers("ros-realsense","cristidragomir/ros-realsense", "roslaunch realsense2_camera rs_camera.launch", "ON" )
+
+    get_workers()
+    get_logs()
+    get_main()
+
+    bind_buttons()
+    get_status()
+});
+
+
