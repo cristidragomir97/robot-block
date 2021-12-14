@@ -1,5 +1,17 @@
 import time
 
+def logg(module, level, message, file="/usr/deploy/robot.log"):
+    import datetime
+
+    _format = "[{}] [{}] [{}] {}".format(datetime.datetime.now(), level, module, message)
+
+    with open(file, 'a+') as f:
+        print(_format, file=f)
+    
+    print(_format)
+    
+    
+
 
 def delete_folder_contents(folder):
     import os, shutil
@@ -26,7 +38,7 @@ def angle_to_pwm( angle):
 
 ### INTERFACE UTILS 
 ###################
-def detect_usb():
+def scan_usb():
     import re
     import subprocess
     rgx = b"Bus\s+(?P<bus>\d+)\s+Device\s+(?P<device>\d+).+ID\s(?P<id>\w+:\w+)\s(?P<tag>.+)$"
@@ -42,44 +54,6 @@ def detect_usb():
                 devices.append(dinfo)
                 
     print(devices)
-
-def tof_address_fix(pins = [17, 27, 22]):
-    TOF1 = '0x29'
-    TOF2 = '0x31'
-    TOF3 = '0x32'
-    
-    import RPi.GPIO as GPIO
-    import VL53L1X
-    import time
-
-    set_pins = lambda x: GPIO.setup(x, GPIO.OUT)
-    set_state = lambda x, y: GPIO.output(x, y)
-
-    def change(new, old):
-        tof = VL53L1X.VL53L1X(i2c_bus=1, i2c_address=old)
-        tof.open()
-        tof.change_address(new)
-        tof.close()
-        time.sleep(0.5)
-
-    GPIO.setmode(GPIO.BOARD)
-    GPIO.setwarnings(False) 
-
-    # setup sensor shutdown pins as output
-    map(set_pins, pins)
-
-
-    map(set_state, pins , [GPIO.HIGH, GPIO.LOW, GPIO.HIGH])
-    time.sleep(0.2)
-
-    change(0x31, 0x29)
-
-    map(set_state, pins , [GPIO.HIGH, GPIO.HIGH, GPIO.LOW])
-    time.sleep(0.2)
-    
-    change(0x32, 0x29)
-    
-    map(set_state, pins , [GPIO.HIGH, GPIO.HIGH, GPIO.HIGH])
 
 #!/usr/bin/env python
 def scan_bus():

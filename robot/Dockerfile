@@ -48,21 +48,23 @@ RUN install_packages curl python3 python3-pip python3-dev python3 python3-setupt
     ros-noetic-rosnode \
     ros-noetic-rosout \
     ros-noetic-rosparam \
-    ros-noetic-rospy \
     ros-noetic-rosservice \
     ros-noetic-rostime \
     ros-noetic-rostopic \
     ros-noetic-rosunit \
     ros-noetic-tf2 \
+    ros-noetic-rosbash \
     python3-rosinstall \
     python3-rosinstall-generator \
     python3-wstool \
     python3-catkin-pkg-modules \
     python3-rosdep-modules \
     ros-noetic-sensor-msgs \
-    ros-noetic-cv-bridge 
+    ros-noetic-cv-bridge \
+    ros-noetic-rospy 
 
 RUN . ${ros_source} && mkdir --parents ${catkin_ws}/src && cd ${catkin_ws} && catkin_make
+
 
 RUN cd ${catkin_ws}/src && \
     git clone https://github.com/dheera/rosboard 
@@ -78,10 +80,12 @@ WORKDIR /usr/deploy
 COPY requirements.txt requirements.txt
 
 # pip install python deps from requirements.txt on the resin.io build server
-RUN pip3 install --upgrade pip && pip3 install -r requirements.txt
+RUN pip3 install --upgrade pip && pip3 install -r requirements.txt && pip3 install colorama 
+ # && pip3 install --extra-index-url https://rospypi.github.io/simple/ rospy
 
 # This will copy all files in our root to the working  directory in the container
 COPY . ./
+WORKDIR /usr/deploy/src
 
-CMD . /opt/ros/noetic/setup.sh \
-    && cd src && python3 main.py --roscore --api --config=conf/sudo.json
+
+CMD . /opt/ros/noetic/setup.sh && python3 main.py --config=config.json --roscore
