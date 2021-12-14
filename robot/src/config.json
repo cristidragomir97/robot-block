@@ -17,6 +17,13 @@
         ],
 
         "input": [
+            {
+                "name":"picamera",
+                "library":"picam",
+                "role": "publisher",
+                "topic": "/camera/image_raw",
+                "args":{}
+            },
             {   
                 "name": "motion_sensor",
                 "library":"ICM20948",
@@ -129,17 +136,6 @@
                 "name": "rosboard",
                 "command": "rosrun rosboard rosboard_node", 
                 "args":{
-                }
-            },
-            { 
-                "name":"imu_filter",
-                "command": "rosrun imu_complementary_filter complementary_filter_node",
-                "args": {
-                    "fixed_frame": "camera_link",
-                    "use_mag": "false",
-                    "do_bias_estimation": "true", 
-                    "do_adaptive_gain": "false", 
-                    "publish_tf": "true"
                 }
             }
         ]

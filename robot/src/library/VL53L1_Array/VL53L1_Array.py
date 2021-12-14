@@ -1,8 +1,11 @@
-import VL53L1X
+import rospy, VL53L1X
 import RPi.GPIO as GPIO
 from sensor_msgs.msg import Range
 from std_msgs.msg import Int32
 import time
+
+from core.utils import *
+
 
 SENSOR_A = 17
 SENSOR_B = 27
@@ -28,9 +31,11 @@ def change(new):
     time.sleep(1)
 
 
+
 class VL53L1_Array():
 
     def __init__(self):
+
         GPIO.setmode(GPIO.BCM) 
         try:
             GPIO.setwarnings(False) 
@@ -39,31 +44,31 @@ class VL53L1_Array():
             GPIO.setup(SENSOR_B, GPIO.OUT)
             GPIO.setup(SENSOR_C, GPIO.OUT)
 
-            print("* changing address for first sensor")
+            logg(__name__, "DEBUG", "changing address for first sensor")
             select(GPIO.LOW, GPIO.HIGH, GPIO.HIGH)
             change(SENSOR_A_ADDRESS)
             time.sleep(1)
 
             # change address of second sensor
-            print("* changing address for second sensor")
+            logg(__name__, "DEBUG", "changing address for second sensor")
             select(GPIO.HIGH, GPIO.LOW, GPIO.HIGH)
             change(SENSOR_B_ADDRESS)
             time.sleep(1)
 
             # change address of the last sensor
-            print("* changing address for third sensor")
+            logg(__name__, "DEBUG", "changing address for third sensor")
             select(GPIO.HIGH, GPIO.HIGH, GPIO.LOW)
             change(SENSOR_C_ADDRESS)
             time.sleep(1)
 
             # take sensors out of sleep
             select(GPIO.HIGH, GPIO.HIGH, GPIO.HIGH)
-            print("* resetting")
+            logg(__name__, "DEBUG", "resetting all sensors")
 
             time.sleep(1)
 
         except Exception as e:
-            print(e)
+            logg(__name__, "ERROR", "Error changing addresses of ToF Sensors {e}")
 
         try:
             self.tof0 = VL53L1X.VL53L1X(i2c_bus=1, i2c_address=SENSOR_C_ADDRESS)
@@ -81,7 +86,7 @@ class VL53L1_Array():
             self.tof2.start_ranging(0) 
             self.tof2.set_timing(30000, 33)
         except Exception as e:
-            print(e)
+            logg(__name__, "ERROR", "Error initialising array{e}")
 
     def create_msg(self, data):
         msg = Int32()

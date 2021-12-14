@@ -1,16 +1,36 @@
-import json, importlib, importlib.machinery, rospy, sys
+import json, importlib, importlib.machinery, rospy, sys, threading, os
 
 from core.library import Library, Package
 from core.config import Config, Device, Script
-from core.subscriber import Subscriber
-from core.publisher import Publisher
-from core.api import API
 from core.utils import *
+
+class Subscriber(threading.Thread):
+    def __init__(self,  topic, message, callback):
+        threading.Thread.__init__(self)
+        self.killed = False
+        rospy.Subscriber(topic, message, callback)
+
+    def run(self):
+        rospy.spin()
+
+class Publisher(threading.Thread):
+    def __init__(self, topic, message, callback, queue_size=100, rate=60):
+        threading.Thread.__init__(self)
+
+        pub = rospy.Publisher(topic, message, queue_size=queue_size)
+
+        self.pub = pub
+        self.callback = callback
+      
+    def run(self):  
+        while True:
+            ret = self.callback()
+            self.pub.publish(ret)
 
 class Factory():
 
     def __init__(self, library, config):
-        #sys.stdout.register('logs/main.log')
+      
         self.threads = {}
 
         self.lib = library
@@ -22,7 +42,7 @@ class Factory():
         self._devices()
         self._scripts()
 
-        print(self.threads)
+        
 
     def import_package(self, package_name, package_source, arguments):
         loader = importlib.machinery.SourceFileLoader(package_name, package_source)
@@ -48,7 +68,7 @@ class Factory():
 
     def _devices(self):
 
-        for device in self.conf.devices():
+        for device in self.conf.get_devices():
 
             pkg = self.lib.get_package(device.library)
             pkg_instance = self.import_package(pkg.name, pkg.python, device.args)
@@ -99,10 +119,8 @@ class Factory():
 
                 worker.start()
 
-               
-
     def _scripts(self):
-        for script in self.conf.scripts():
+        for script in self.conf.get_scripts():
             self.threads[script.name] =  {
                     'thread': script, 
                     'info':{
@@ -112,7 +130,8 @@ class Factory():
                     }
                 }
             
-            print(script.shell)
+            script.start()
+    
     
     def reload(self):
         for thread in self.threads.values():
@@ -123,18 +142,3 @@ class Factory():
     def threads(self):
         return self.threads
 
-    def info_thread(self, id):
-        thread = self.threads[id]['thread']
-        return {'thread': str(id), 'action': 'stopping', 'is_running': thread.isRunning, 'stoppped':thread.stopped()}
-
-    def stop_thread(self, id):
-        thread = self.threads[id]['thread']
-        thread.kill()
-
-        return {'thread': str(id), 'action': 'stopping', 'is_running': thread.isRunning, 'stoppped':thread.stopped()}
-    
-    def start_thread(self, id):
-        thread = self.threads[id]['thread']
-        thread.start()
-
-        return {'thread': str(id), 'action': 'stopping', 'is_running': thread.isRunning, 'stoppped':thread.stopped()}

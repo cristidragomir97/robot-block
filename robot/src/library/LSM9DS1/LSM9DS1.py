@@ -1,7 +1,11 @@
 
-import rospy, time, board, busio, math
+import rospy, time, board, busio, math, logging
 import adafruit_lsm9ds1
 from sensor_msgs.msg import Imu
+
+
+from core.utils import *
+
 
 # Calibration constants
 gRes = 6.1e-05
@@ -16,12 +20,13 @@ soft_iron = [0.99, -0.002, -0.005, -0.002, 0.989, -0.075, -0.005, -0.075, 1.027]
 
 class LSM9DS1():
     def __init__(self):
-        print("calling form inside IMU instance")
+    
+
         # I2C connection:
         i2c = busio.I2C(board.SCL, board.SDA)
         self.sensor = adafruit_lsm9ds1.LSM9DS1_I2C(i2c)
 
-        print("* IMU successfullly initialised")
+        rospy.loginfo("* IMU successfullly initialised")
 
 
 
@@ -31,7 +36,7 @@ class LSM9DS1():
 
 
         msg = Imu()
-        msg.header.frame_id = "head_imu"
+        msg.header.frame_id = "imu"
         msg.header.stamp = rospy.get_rostime()
 
         msg.angular_velocity.x = (gyro_x *  gRes - gOff[0]) * math.pi / 180.0

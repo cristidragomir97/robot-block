@@ -1,13 +1,19 @@
 import cv2, rospy
 from sensor_msgs.msg import Image
 from cv_bridge import CvBridge, CvBridgeError
+import time, logging 
+from core.utils import *
+
+
+
 
 class picam():
 
     def __init__(self):
-        print("hello camera")
+        
         self.bridge = CvBridge()
         self.camera = cv2.VideoCapture(0)
+        logg(__name__, "INFO", "successfully initialised camera on /dev/video0")
         #self.camera.set('Brightness', 20)
         #self.camera.set('Contrast', 128)
         #self.camera.set('Saturation', 255)

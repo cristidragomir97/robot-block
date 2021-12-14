@@ -1,4 +1,7 @@
-import os, json, importlib, sys, subprocess
+import rospy, os, json, importlib, sys, subprocess
+
+from core.utils import *
+
 
 class Package():
         def __init__(self, name, file):
@@ -20,17 +23,14 @@ class Package():
                             if not self.is_installed(pck):
                                 self.install(pck)
 
-                            # and install if needed 
-                            
-
                 except Exception as e:
-                    print(e)
+                    logg(__name__, "ERROR", "Can't load {} - field is missing ".format(e))
                     self.valid = False
                     
                 except KeyError as k:
-                    print("[warning] Can't load {} - field is missing ".format(k))
+                    logg(__name__, "ERROR", "Can't load {} - field is missing ".format(e))
                     self.valid = False
-
+    
         def install(self, package):
             subprocess.check_call([sys.executable, "-m", "pip", "install", package])
 
@@ -43,12 +43,9 @@ class Package():
             return self.valid
 
                 
-
 class Library():
-
     def __init__(self):
         self.packages = dict()
-        sys.stdout.register('logs/main.log')
 
         library_dir = os.path.realpath('library')
         library_folders = [f.path  for f in os.scandir(library_dir) if f.is_dir()]
@@ -58,26 +55,27 @@ class Library():
             json_filename = full_path + '/{}.json'.format(name)
             python_filename = full_path + '/{}.py'.format(name)
 
-
             if os.path.exists(python_filename):
                 if os.path.exists(json_filename):
-                    pack = Package(name, json_filename,)
+                    pack = Package(name, json_filename)
+
                     if pack.is_valid():
                         self.packages[name] = pack
-                        print("[info] Package {} loaded".format(name), pack)
+                        logg(__name__, "INFO", "{} loaded  from {}".format(name, json_filename))
                     else:
-                        print("INVALID FMM")
+                       pass
                 else:
-                    print("[warning] config file for {} missing, skipping package !".format(name))
+                    logg(__name__, "WARNING", "Python file for {} missing, skipping package !".format(name))
             else:
-                print("[warning] python file for {} missing, skipping package !".format(name))
+                logg(__name__, "WARNING", "JSON file for {} missing, skipping package !".format(name))
 
 
     def pretty_print(self):
-        print("- Packages: ")
+        logg(__name__, "INFO", "PACKAGES")
+
         for package in self.packages: 
             p = self.packages[package]
-            print("-->", p.name, " - ", p.info)
+            logg(__name__, "INFO", "{} - {} ".format(p.name, p.info))
     
 
     def has_package(self, package):
@@ -85,15 +83,3 @@ class Library():
     
     def get_package(self, package):
         return self.packages[package]
-
-
-
-  
-
-
-    
-    
-
-    
-
-   

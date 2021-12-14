@@ -1,9 +1,8 @@
 {
-    "categ": "sensors",
-    "type": "camera",
+    
     "name": "picam",
+    "info": "V4L2-based publisher for raspberry pi camera",
     "callback": "read",
     "ros_message": ["sensor_msgs.msg", "Image"],
-    "bus": "",
-    "address": "/dev/video0"
+    "dependencies": []
 }

@@ -1,7 +1,8 @@
 
-import rospy, time, board, busio, math
+import rospy, time, board, busio, math, logging
 import qwiic_icm20948
 from sensor_msgs.msg import Imu
+from core.utils import * 
 
 # Calibration constants
 gRes = 6.1e-05
@@ -16,13 +17,13 @@ soft_iron = [0.99, -0.002, -0.005, -0.002, 0.989, -0.075, -0.005, -0.075, 1.027]
 
 class ICM20948():
     def __init__(self, address):
-        print(address)
         self.sensor = qwiic_icm20948.QwiicIcm20948()
         self.sensor.begin()
 
         if self.sensor.connected == False:
-            print("Qwiic ICM20948. Please check your connection", file=sys.stderr)
+            logg(__name__, "WARNING", "Error connecting to device. Please check your connection")
             return
+        logg(__name__, "INFO", "Succesfully connected")
 
     def read(self):
         if self.sensor.dataReady():
