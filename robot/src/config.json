@@ -129,15 +129,6 @@
                     "address": "0x29"
                 }
             }
-        ],
-
-        "scripts":[
-            {   
-                "name": "rosboard",
-                "command": "rosrun rosboard rosboard_node", 
-                "args":{
-                }
-            }
         ]
     }
 }]

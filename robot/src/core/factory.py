@@ -1,4 +1,4 @@
-import json, importlib, importlib.machinery, rospy, sys, threading, os
+import json, importlib, importlib.machinery, sys, threading, os
 
 from core.library import Library, Package
 from core.config import Config, Device, Script

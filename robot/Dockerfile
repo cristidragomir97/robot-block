@@ -88,4 +88,4 @@ COPY . ./
 WORKDIR /usr/deploy/src
 
 
-CMD . /opt/ros/noetic/setup.sh && python3 main.py --config=config.json --roscore
+CMD sleep infinity

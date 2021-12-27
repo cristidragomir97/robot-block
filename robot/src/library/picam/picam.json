@@ -1,8 +1,0 @@
-{
-    
-    "name": "picam",
-    "info": "V4L2-based publisher for raspberry pi camera",
-    "callback": "read",
-    "ros_message": ["sensor_msgs.msg", "Image"],
-    "dependencies": []
-}
