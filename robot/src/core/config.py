@@ -3,6 +3,7 @@ from core.script import Script
 from core.utils import *
 
 
+###############################################################################
 class Channel():
     def __init__(self, name, role, pin, topic, args):
         self.name = name
@@ -10,12 +11,15 @@ class Channel():
         self.pin = pin
         self.topic = topic
         self.args = args
-    
-    
+        
+###############################################################################
 class Device():
     def __init__(self, obj):
 
         self.channels = []
+        self.library = obj["library"]
+        self.args = obj["args"] 
+
         try:
             self.name = obj["name"]
             if ("channel_no" in obj):
@@ -35,8 +39,7 @@ class Device():
                 self.role = obj["role"]
                 self.topic = obj["topic"]  
 
-            self.library = obj["library"]
-            self.args = obj["args"] 
+            
 
         except KeyError as k:
             formatted = json.dumps(obj, indent=4)   
@@ -52,9 +55,7 @@ class Config():
     def __init__(self,  _file):
         with open(_file) as f:
             self.contents = json.load(f)[0]
-
             logg(__name__, "INFO", "loading configuration file: {}".format(_file))
-
             _, self.dev, self.ext, = self.parse(self.contents)
             
            

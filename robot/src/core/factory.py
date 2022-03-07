@@ -119,18 +119,6 @@ class Factory():
 
                 worker.start()
 
-    def _scripts(self):
-        for script in self.conf.get_scripts():
-            self.threads[script.name] =  {
-                    'thread': script, 
-                    'info':{
-                        'name': script.name,
-                        'command': script.command, 
-                        'role': 'script'
-                    }
-                }
-            
-            script.start()
     
     
     def reload(self):

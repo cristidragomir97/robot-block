@@ -1,13 +1,12 @@
 [{
     "name": "sudo", 
     "desc": "kitchen sink included",
-    "components":{
-        "output": [
+    "components": [
             {   
-                "name": "motor_driver", 
+                "name": "motorhead", 
                 "role": "subscriber",
                 "topic": "/cmd_vel",
-                "library": "SCMD",
+                "library": "github.com/cristidragomir97/motorhead",
                 "address": "0x5d", 
                 "args":{
                     "radius": 0.0325,
@@ -17,13 +16,7 @@
         ],
 
         "input": [
-            {
-                "name":"picamera",
-                "library":"picam",
-                "role": "publisher",
-                "topic": "/camera/image_raw",
-                "args":{}
-            },
+        
             {   
                 "name": "motion_sensor",
                 "library":"ICM20948",
