@@ -1,38 +1,74 @@
-version: '2'
+
+
+version: '2.1'
 
 volumes:
-  pulse:  
+    ros-bin: 
+    opencv-lib: 
+    opencv-include: 
+    usr-lib:
 
-services:    
-  audio:
-    image: balenablocks/audio
-    privileged: true
+services:
+  roscore:
+    image: cristidragomir97/roscore
+    environment: 
+       - UDEV=1
+       - ROS_HOSTNAME=roscore
+       - ROS_MASTER_URI=http://roscore:11311
+    links: 
+      - rosboard
+      - camera
+      - robot-block
     ports:
-      - 4317:4317                 # Only required if using PA over TCP socket
+      - "11311:11311"
     volumes:
-      - 'pulse:/run/pulse'   
-           # Only required if using PA over UNIX socket
-  core:
+      - ros-bin:/opt/ros/noetic
+      - opencv-lib:/usr/local/lib/opencv
+      - opencv-include:/usr/local/include/opencv
+      - usr-lib:/usr/lib/aarch64-linux-gnu
+
+
+  rosboard:
+    image: cristidragomir97/rosboard
+    environment: 
+       - ROS_HOSTNAME=rosboard
+       - ROS_MASTER_URI=http://roscore:11311
+    ports:
+      - "8888:8888"
+    volumes:
+      - ros-bin:/opt/ros/noetic
+
+
+
+
+ 
+  robot-block:
     privileged: true
     build: ./robot
-    labels:
-      io.balena.features.kernel-modules: '1'
-      io.balena.features.balena-socket: 1
-      io.balena.features.sysfs: 1
-      io.balena.features.supervisor-api: 1
-      io.balena.features.firmware: 1
+    environment: 
+       - UDEV=1
+       - ROS_HOSTNAME=robot-block
+       - ROS_MASTER_URI=http://roscore:11311
+    volumes:
+      - ros-bin:/opt/ros/noetic
+      - opencv-lib:/usr/local/lib/opencv
+      - opencv-include:/usr/local/include/opencv
+      - usr-lib:/usr/lib/aarch64-linux-gnu
     ports:
       - "8000:80"
       - "5000:5000"
-    network_mode: host
-    volumes:
-      - 'pulse:/run/pulse' 
-    environment: 
-        - UDEV=1
-        #- ROS_IP=192.168.0.244
-        #- ROS_HOSTNAME=d67581c.local
-        #- ROS_MASTER_URI=http://192.168.0.244:11311
     devices:
       - "/dev:/dev"
 
-        
+  arduino-block:
+    privileged: true
+    image: cristidragomir97/arduino-block
+    devices:
+      - "/dev:/dev"
+    environment: 
+      - AVRDUDE_CPU=atmega328p 
+      - MONITOR_BAUD=115200
+      - SERIAL_PORT= /dev/ttyUSB0
+      - REPO=github.com/cristidragomir97/motorhead 
+      - SKETCH_FOLDER=/usr/sketches
+      - ARDUINO_FQBN=arduino:avr:unonano
